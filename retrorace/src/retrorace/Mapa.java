@@ -7,7 +7,7 @@ package retrorace;
 
 /**
  *
- * @author sosan
+ * @author Andres
  */
 public class Mapa {
     
