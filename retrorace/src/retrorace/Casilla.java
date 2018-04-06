@@ -7,7 +7,7 @@ package retrorace;
 
 /**
  *
- * @author Andres
+ * @author Andrés
  */
 public class Casilla {
     
