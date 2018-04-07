@@ -1,0 +1,12 @@
+[
+  {
+    "id":1,
+    "imgRoute":"img/mapa/casillas/Cielo.png",
+    "propiedad":"transitable"
+  },
+  {
+    "id":2,
+    "imgRoute":"img/mapa/casillas/Cielo.png",
+    "propiedad":"transitable"
+  }
+]

@@ -13,14 +13,11 @@ import javax.swing.Icon;
  */
 public class Casilla {
     private int id;
-    private Icon img,imgAux;
+    private String imgRoute,imgAuxRoute;
     private String propiedad;
 
-    public Casilla(int id, Icon img, Icon imgAux, String propiedad) {
-        this.id = id;
-        this.img = img;
-        this.imgAux = imgAux;
-        this.propiedad = propiedad;
+    public Casilla() {
+     
     }
 
     public int getId() {
@@ -31,20 +28,20 @@ public class Casilla {
         this.id = id;
     }
 
-    public Icon getImg() {
-        return img;
+    public String getImgRoute() {
+        return imgRoute;
     }
 
-    public void setImg(Icon img) {
-        this.img = img;
+    public void setImgRoute(String imgRoute) {
+        this.imgRoute = imgRoute;
     }
 
-    public Icon getImgAux() {
-        return imgAux;
+    public String getImgAuxRoute() {
+        return imgAuxRoute;
     }
 
-    public void setImgAux(Icon imgAux) {
-        this.imgAux = imgAux;
+    public void setImgAuxRoute(String imgAuxRoute) {
+        this.imgAuxRoute = imgAuxRoute;
     }
 
     public String getPropiedad() {
@@ -54,8 +51,5 @@ public class Casilla {
     public void setPropiedad(String propiedad) {
         this.propiedad = propiedad;
     }
-    
-    
-    
-    
+   
 }
