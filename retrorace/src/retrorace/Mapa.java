@@ -5,10 +5,16 @@
  */
 package retrorace;
 
+import javax.swing.Icon;
+
 /**
  *
  * @author Andrés
  */
 public class Mapa {
+    private String nombre;
+    private Icon img;
+    private Casilla[] casillas;
+    private int[][] distribucion;
     
 }
