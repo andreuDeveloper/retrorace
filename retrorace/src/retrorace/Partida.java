@@ -14,8 +14,22 @@ import java.util.ArrayList;
 public class Partida {
     
     private ArrayList personajes;
+    private boolean activa;
     
     public Partida(){
         this.personajes = new ArrayList();
+        this.activa = true;
     }
+    
+    public void addPersonaje() {
+        Personaje p = new Personaje(this);
+        this.personajes.add(p);
+        new Thread(p).start();
+    }
+    
+    public boolean isActiva(){
+        return this.activa;
+    }
+    
+    
 }
