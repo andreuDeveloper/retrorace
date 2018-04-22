@@ -15,7 +15,15 @@ public class Juego {
     private GUI gui;
     
     public void initJuego(){
-        gui = new GUI();
-        sesion = new Sesion(gui);
+        gui = new GUI(this);
+        this.gui.initGUI();
+    }
+
+    void initSesion() {
+        
+    }
+
+    void initSesion(String username) {
+        this.sesion=new Sesion(this.gui,username);
     }
 }
