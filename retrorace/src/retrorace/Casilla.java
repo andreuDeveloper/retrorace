@@ -5,21 +5,39 @@
  */
 package retrorace;
 
+import java.awt.Image;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 /**
  *
  * @author Andrés
  */
 public class Casilla {
+
     private int id;
-    private String imgRoute,imgAuxRoute;
+    private String imgRoute, imgAuxRoute;
     private String propiedad;
+    private Image image;
 
     public Casilla() {
-     
+
     }
 
+    protected void loadImage() {
+        ImageIcon ii = new ImageIcon(imgRoute);
+        image = ii.getImage();
+    }
+
+    protected void loadImageAux() {
+        ImageIcon ii = new ImageIcon(imgAuxRoute);
+        image = ii.getImage();
+    }
+
+    public Image getImage() {
+        return image;
+    }
+    
     public int getId() {
         return id;
     }
@@ -51,5 +69,5 @@ public class Casilla {
     public void setPropiedad(String propiedad) {
         this.propiedad = propiedad;
     }
-   
+
 }

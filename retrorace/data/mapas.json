@@ -1,0 +1,12 @@
+[
+  {
+    "nombre":"nieve",
+    "imgRoute":"img/mapa/casillas/Cielo.png",
+    "distribucion":{
+    {1, 1, 1},
+    {1, 1, 1},
+    {1, 1, 1},
+    {1, 1, 1},
+}
+  }
+]
