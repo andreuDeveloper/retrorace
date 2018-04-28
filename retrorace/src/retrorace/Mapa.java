@@ -29,34 +29,43 @@ public class Mapa extends JPanel {
     private ArrayList<Casilla> casillas;
     private int[][] distribucion;
 
+    public Mapa() {
 
-    public Mapa(String nombre, int[][] distribucion) {
-        try {
-            this.nombre = nombre;
-            this.distribucion = distribucion;
-            cargarCasillas();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Mapa.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
-    // the method that does the drawing:
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         for (int row = 0; row < this.distribucion.length; row++) {
             for (int col = 0; col < this.distribucion[row].length; col++) {
                 Image i = this.casillas.get(this.distribucion[row][col]).getImage();
-                int x = (col * i.getWidth(null)) / this.distribucion[row].length;
-                int y = (row * i.getHeight(null)) / this.distribucion.length;
-                int w = i.getWidth(null) / this.distribucion[row].length;
-                int h = i.getHeight(null) / this.distribucion.length;
+                int x = (col * i.getWidth(null)) ;
+                int y = (row * i.getHeight(null));
+                int w = i.getWidth(null);
+                int h = i.getHeight(null);
                 g.drawImage(i, x, y, w, h, null);
             }
         }
     }
 
-    private void cargarCasillas() throws FileNotFoundException {
+//    @Override
+//    public void paint(Graphics g) {
+//        super.paint(g); // <----- don't forget to call this
+//
+//        for (int row = 0; row < this.distribucion.length; row++) {
+//            for (int col = 0; col < this.distribucion[row].length; col++) {
+//                Image i = this.casillas.get(this.distribucion[row][col]).getImage();
+//                int x = (col * i.getWidth(null)) / this.distribucion[row].length;
+//                int y = (row * i.getHeight(null)) / this.distribucion.length;
+//                int w = i.getWidth(null) / this.distribucion[row].length;
+//                int h = i.getHeight(null) / this.distribucion.length;
+//                g.drawImage(i, x, y, w, h, null);
+//                System.out.println(i.getWidth(null));
+//            }
+//        }
+//    }
+
+    public void cargarCasillas() throws FileNotFoundException {
         Gson gson = new Gson();
         this.casillas = gson.fromJson(new FileReader("data/casillas.json"), new TypeToken<List<Casilla>>() {
         }.getType());

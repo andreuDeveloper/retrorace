@@ -1,12 +1,17 @@
 [
   {
-    "id":1,
+    "id":0,
     "imgRoute":"img/mapa/casillas/Cielo.png",
     "propiedad":"transitable"
   },
   {
+    "id":1,
+    "imgRoute":"img/mapa/casillas/Tierra.png",
+    "propiedad":"transitable"
+  },
+  {
     "id":2,
-    "imgRoute":"img/mapa/casillas/Cielo.png",
+    "imgRoute":"img/mapa/casillas/Hierba.png",
     "propiedad":"transitable"
   }
 ]
