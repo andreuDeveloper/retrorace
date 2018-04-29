@@ -7,11 +7,24 @@
   {
     "id":1,
     "imgRoute":"img/mapa/casillas/Tierra.png",
-    "propiedad":"transitable"
+    "propiedad":"intransitable"
   },
   {
     "id":2,
     "imgRoute":"img/mapa/casillas/Hierba.png",
-    "propiedad":"transitable"
+    "propiedad":"sostenedor"
+  }
+,
+  {
+    "id":3,
+    "imgRoute":"img/mapa/casillas/Antorcha_Activa.png",
+    "propiedad":"checkpoint"
+  }
+
+,
+  {
+    "id":4,
+    "imgRoute":"img/mapa/casillas/Fin_Activo.png",
+    "propiedad":"finalizable"
   }
 ]

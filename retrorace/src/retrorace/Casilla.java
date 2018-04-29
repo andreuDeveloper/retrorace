@@ -18,7 +18,7 @@ public class Casilla {
     private int id;
     private String imgRoute, imgAuxRoute;
     private String propiedad;
-    private Image image;
+    private Image image,imageAux;
 
     public Casilla() {
 
@@ -27,6 +27,10 @@ public class Casilla {
     protected void loadImage() {
         ImageIcon ii = new ImageIcon(imgRoute);
         image = ii.getImage();
+        if(imgAuxRoute!=null){
+        ImageIcon iiAux = new ImageIcon(imgAuxRoute);
+        imageAux = iiAux.getImage();
+        }
     }
 
     protected void loadImageAux() {
