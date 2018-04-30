@@ -77,7 +77,7 @@ public class Personaje implements Runnable {
     
     public void pintar(Graphics g){
         System.out.println("Pintar pj"+x+ " "+y);
-        g.setColor(Color.red);
+        g.setColor(Color.blue);
         g.fillRect((int) x, (int)y, 32, 32);
     }
     
