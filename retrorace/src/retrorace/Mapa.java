@@ -92,6 +92,7 @@ public class Mapa extends JPanel {
                 int w = i.getWidth(null);
                 int h = i.getHeight(null);
                 g.drawImage(i, xs, y, w, h, null);
+                
 
             }
         }
