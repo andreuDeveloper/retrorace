@@ -13,9 +13,43 @@ import java.util.ArrayList;
  */
 public class Partida {
     
-    private ArrayList personajes;
+    private ArrayList<Personaje> personajes;
+    private boolean activa;
+    private final double gravedad = 9.8;
+    private final double dt = 0.016683;
     
     public Partida(){
-        this.personajes = new ArrayList();
+        this.personajes = new ArrayList<Personaje>();
+        this.activa = true;
     }
+    
+    public void addPersonaje(Personaje p) {
+        //Personaje p = new Personaje(this);
+        this.personajes.add(p);
+        new Thread(p).start();
+    }
+    
+    public Personaje getPersonaje(int i){
+        return this.personajes.get(i);
+    }
+    
+    public int totalPersonajes(){
+        return this.personajes.size();
+    }
+    
+    public boolean isActiva(){
+        return this.activa;
+    }
+
+    public double getGravedad() {
+        return gravedad;
+    }
+
+    public double getDt() {
+        return dt;
+    }
+    
+    
+    
+    
 }
