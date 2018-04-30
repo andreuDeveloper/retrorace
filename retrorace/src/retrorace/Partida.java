@@ -17,8 +17,7 @@ public class Partida implements Runnable {
 
     private ArrayList<Personaje> personajes; //Por defecto 0 es el nuestro
     private boolean activa;
-    private final double gravedad = 9.8;
-    private final double dt = 0.016683;
+    private final double gravedad = 0.9;
     private Mapa mapa;
 
     public Partida(Mapa mapa) {
@@ -77,10 +76,6 @@ public class Partida implements Runnable {
 
     public double getGravedad() {
         return gravedad;
-    }
-
-    public double getDt() {
-        return dt;
     }
 
 
