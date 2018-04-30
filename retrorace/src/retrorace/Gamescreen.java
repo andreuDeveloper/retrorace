@@ -8,19 +8,22 @@ package retrorace;
 import java.awt.Canvas;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
 
 /**
  *
  * @author sosan
  */
-public class Gamescreen extends Canvas implements Runnable {
+public class Gamescreen extends Canvas implements Runnable, KeyListener {
 
     private Partida partida;
     private GUI gui;
 
     
     public Gamescreen(GUI gui, Partida partida){
+        this.addKeyListener(this);
         this.gui=gui;
         this.partida = partida;
         this.partida.getMapa().iniciarMapa();
@@ -51,7 +54,7 @@ public class Gamescreen extends Canvas implements Runnable {
                 updates++;
                 delta--;
             }
-            preDraw();
+            preDraw();            
             render();
             frames++;
 
@@ -83,8 +86,9 @@ public class Gamescreen extends Canvas implements Runnable {
         g.setColor(getBackground());
         g.fillRect(0, 0, WIDTH, HEIGHT); //Fill the screen with the canvas' background color
         g.setColor(getForeground());
-
-        paint(g); //Call our draw method, passing in the graphics object which we just got from our buffer strategy
+       
+        repaint();
+        //paint(g); //Call our draw method, passing in the graphics object which we just got from our buffer strategy
 
         g.dispose(); //Dispose of our graphics object because it is no longer needed, and unnecessarily taking up memory
         bs.show(); //Show the buffer strategy, flip it if necessary (make back buffer the visible buffer and vice versa) 
@@ -92,7 +96,37 @@ public class Gamescreen extends Canvas implements Runnable {
 
     public void paint(Graphics g) {
         this.partida.getMapa().paint(g);
-        this.partida.getPersonaje(0).pintar(g);
+        for (int i = 0; i < this.partida.totalPersonajes(); i++) {
+            this.partida.getPersonaje(i).pintar(g);
+        }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent ke) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent ke) {
+        int key = ke.getKeyCode();
+        System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
         
+        switch (key) {
+            case 37:    //Left
+                this.partida.getPersonaje(0).moverIzquerda();
+                break;
+            case 38:    //Up
+                
+                break;
+            case 39:    //Right
+                this.partida.getPersonaje(0).moverDerecha();
+                break;
+            case 40:    //Down
+                break;
+            default:    //Other keys
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent ke) {
     }
 }

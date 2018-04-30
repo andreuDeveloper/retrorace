@@ -82,18 +82,19 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     }
 
     public void initGUI() {
-        this.setResizable(false);
-        this.setUndecorated(true);
+        this.setResizable(true);
+        this.setSize(800, 500);
+        this.setUndecorated(false);
         this.setAlwaysOnTop(true);
         GraphicsDevice gd
                 = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-
+        /*
         if (gd.isFullScreenSupported()) {
             setUndecorated(true);
             gd.setFullScreenWindow(this);
         } else {
             System.err.println("Full screen not supported");
-        }
+        }*/
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.addUIComponents(getContentPane());
@@ -384,7 +385,10 @@ c.ipady=15;
             panelGamescreen.setVisible(true);
             gamescreen.setPartida(sesion.initPartida(numMap));
         }
-        this.gamescreen.setBackground(new Color(208, 244, 247));        
+
+        new Thread(this.gamescreen).start();
+        this.gamescreen.setBackground(new Color(208, 244, 247));  
+        this.gamescreen.requestFocus();
     }
 
     private boolean checkExit() {
@@ -448,23 +452,7 @@ c.ipady=15;
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        int key = ke.getKeyCode();
-        System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
         
-        switch (key) {
-            case 37:    //Left
-                //p.moverIzquerda();
-                break;
-            case 38:    //Up
-                
-                break;
-            case 39:    //Right
-                //p.moverDerecha();
-                break;
-            case 40:    //Down
-                break;
-            default:    //Other keys
-        }
 
     }
 
