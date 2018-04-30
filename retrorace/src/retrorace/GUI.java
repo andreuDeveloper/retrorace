@@ -442,13 +442,13 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         
         switch (key) {
             case 37:    //Left
-                p.moverIzquerda();
+                //p.moverIzquerda();
                 break;
             case 38:    //Up
                 
                 break;
             case 39:    //Right
-                p.moverDerecha();
+                //p.moverDerecha();
                 break;
             case 40:    //Down
                 break;
@@ -460,5 +460,6 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     @Override
     public void keyReleased(KeyEvent ke) {
         //System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
+    }
 
 }

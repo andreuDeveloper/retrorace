@@ -12,32 +12,50 @@ import java.util.ArrayList;
  * @author sosan
  */
 public class Partida {
-    
-    private ArrayList<Personaje> personajes;
+
+    private ArrayList<Personaje> personajes; //Por defecto 0 es el nuestro
     private boolean activa;
     private final double gravedad = 9.8;
     private final double dt = 0.016683;
-    
-    public Partida(){
+    private Mapa mapa;
+
+    public Partida(Mapa mapa) {
         this.personajes = new ArrayList<Personaje>();
+        this.activa = false;
+        this.personajes.add(new Personaje(this));
+        this.mapa = mapa;
+    }
+
+    public void iniciarPartida() {
         this.activa = true;
+        for (int i = 0; i < this.personajes.size(); i++) {
+            new Thread(this.personajes.get(i)).start();
+        }
     }
     
+    public Mapa getMapa() {
+        return mapa;
+    }
+
+    public void addPersonaje() {
+        if (this.personajes.size() < 4) {
+            this.personajes.add(new Personaje(this));
+        }
+    }
+
     public void addPersonaje(Personaje p) {
-        //Personaje p = new Personaje(this);
         this.personajes.add(p);
-        new Thread(p).start();
     }
-    
-    public Personaje getPersonaje(int i){
+
+    public Personaje getPersonaje(int i) {
         return this.personajes.get(i);
     }
-    
-    public int totalPersonajes(){
+
+    public int totalPersonajes() {
         return this.personajes.size();
     }
-    
-    public boolean isActiva(){
+
+    public boolean isActiva() {
         return this.activa;
     }
 
@@ -48,8 +66,5 @@ public class Partida {
     public double getDt() {
         return dt;
     }
-    
-    
-    
-    
+
 }
