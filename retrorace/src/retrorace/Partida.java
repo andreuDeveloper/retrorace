@@ -6,12 +6,14 @@
 package retrorace;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author sosan
  */
-public class Partida {
+public class Partida implements Runnable {
 
     private ArrayList<Personaje> personajes; //Por defecto 0 es el nuestro
     private boolean activa;
@@ -26,10 +28,25 @@ public class Partida {
         this.mapa = mapa;
     }
 
-    public void iniciarPartida() {
+    private void iniciarPartida() {
         this.activa = true;
         for (int i = 0; i < this.personajes.size(); i++) {
             new Thread(this.personajes.get(i)).start();
+        }
+    }
+    
+    
+    @Override
+    public void run() {
+        iniciarPartida();
+        while (activa) {
+            //Check position %xcasilla
+            
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
@@ -66,5 +83,6 @@ public class Partida {
     public double getDt() {
         return dt;
     }
+
 
 }
