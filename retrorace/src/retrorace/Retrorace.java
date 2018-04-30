@@ -16,6 +16,10 @@ public class Retrorace {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        GUI g = new GUI();
+        //Partida p = new Partida();
+       // p.addPersonaje();
+       //Personaje p = new Personaje();
     }
     
 }
