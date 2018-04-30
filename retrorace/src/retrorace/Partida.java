@@ -18,7 +18,8 @@ public class Partida {
     private final double gravedad = 9.8;
     private final double dt = 0.016683;
     
-    public Partida(){
+    //BORRAR ESTE CONSTRUCTOR
+ public Partida(Mapa m){
         this.personajes = new ArrayList<Personaje>();
         this.activa = true;
     }

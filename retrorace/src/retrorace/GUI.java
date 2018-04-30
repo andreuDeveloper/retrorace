@@ -101,6 +101,10 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         setVisible(true);
     }
 
+    void setPartidaInGamescreen(Partida partida) {
+        gamescreen.setPartida(partida);
+    }
+    
     private void addUIComponents(Container panel) {
         panel.add(createComponentExit(), BorderLayout.NORTH);
         panel.add(createComponentLogin(), BorderLayout.CENTER);
@@ -137,7 +141,6 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
     private JPanel createComponentGamescreen() {
         panelGamescreen = new JPanel(new FlowLayout());
-        this.gamescreen = new Gamescreen(this);
 
         //panelGamescreen.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         panelGamescreen.add(gamescreen);
@@ -274,12 +277,14 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
         int numMaps = sesion.getMapas().size();
         btnMap = new ArrayList();
-
-        JPanel panelAuxMaps = new JPanel(new GridLayout(3, 1, 5, 15));
-
-        btnMap.add(new JButton("Mapa 1"));
-        btnMap.add(new JButton("Mapa 2"));
-        btnMap.add(new JButton("Mapa 3"));
+        
+        sesion.loadMaps();
+        
+        JPanel panelAuxMaps = new JPanel(new GridLayout(sesion.getMapas().size(), 1, 5, 15));
+        
+        for(Mapa m:sesion.getMapas()){
+            btnMap.add(new JButton(m.getNombre()));
+        }
 
         for (JButton btnAux : btnMap) {
             panelAuxMaps.add(btnAux);
@@ -288,7 +293,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
         c.gridx = 0;
         c.gridy = 1;
-
+c.ipady=15;
         c.weightx = 1.0d;
         c.fill = GridBagConstraints.BOTH;
 
@@ -368,19 +373,19 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
     }
 
-    private void initPartida() {
+    private void initPartida(int numMap) {
         panelMapChoice.setVisible(false);
         if (panelGamescreen == null) {
-            gamescreen = new Gamescreen(this);
+            gamescreen = new Gamescreen(this,sesion.initPartida(numMap));
             this.getContentPane().add(createComponentGamescreen(), BorderLayout.CENTER);
             panelGamescreen.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
             gamescreen.setSize(getWidth(), getHeight() - btnExit.getHeight() - 2 * btnExit.getY());
-
         } else {
             panelGamescreen.setVisible(true);
+            gamescreen.setPartida(sesion.initPartida(numMap));
         }
-        panelGamescreen.setBackground(Color.CYAN);
         this.gamescreen.setBackground(Color.red);
+        
     }
 
     private boolean checkExit() {
@@ -423,13 +428,20 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
             for (JButton btnAuxMap : btnMap) {
                 if (btnAuxMap == btnAux) {
                     //System.out.println(btnMap.indexOf(btnAuxMap));
-                    initPartida();
+                    initPartida(btnMap.indexOf(btnAuxMap));
                 }
+            }
+        }else if(panelGamescreen.isVisible()){
+            if (btnAux == btnBack) {
+                panelMapChoice.setVisible(true);
+                panelGamescreen.setVisible(false);
+
+                
+                //PAUSAR PARTIDA O TERMINARLA //CAMBIAR
             }
         }
     }
-  
-  
+    
      @Override
     public void keyTyped(KeyEvent ke) {
         //System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
@@ -442,13 +454,13 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         
         switch (key) {
             case 37:    //Left
-                p.moverIzquerda();
+                //p.moverIzquerda();
                 break;
             case 38:    //Up
                 
                 break;
             case 39:    //Right
-                p.moverDerecha();
+                //p.moverDerecha();
                 break;
             case 40:    //Down
                 break;
@@ -460,5 +472,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     @Override
     public void keyReleased(KeyEvent ke) {
         //System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
+    }
 
+    
 }
