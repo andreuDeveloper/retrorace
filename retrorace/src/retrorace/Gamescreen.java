@@ -5,16 +5,20 @@
  */
 package retrorace;
 
+import java.awt.Canvas;
+import java.awt.Color;
+
 /**
  *
  * @author sosan
  */
-public class Gamescreen {
+public class Gamescreen extends Canvas{
     
     private Partida partida;
+    private GUI gui;
     
-    public Gamescreen(){
-        
+    public Gamescreen(GUI gui){
+        this.gui=gui;
     }
     
     //La partida tiene sentido que se pase por un metodo en algun momento, no como
