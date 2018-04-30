@@ -35,7 +35,6 @@ public class Partida implements Runnable {
         }
     }
     
-    
     @Override
     public void run() {
         iniciarPartida();
