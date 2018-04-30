@@ -19,12 +19,12 @@ public class Gamescreen extends Canvas implements Runnable {
     private Partida partida;
     private GUI gui;
 
-    public Gamescreen(GUI gui) {
-        this.gui = gui;
+    
+    public Gamescreen(GUI gui, Partida partida){
+        this.gui=gui;
+        this.partida = partida;
     }
 
-    //La partida tiene sentido que se pase por un metodo en algun momento, no como
-    //parametro en el constructor, ya que no habra ninguna partida creada todavia
     public void setPartida(Partida partida) {
         this.partida = partida;
         this.createBufferStrategy(2);
@@ -49,7 +49,7 @@ public class Gamescreen extends Canvas implements Runnable {
                 updates++;
                 delta--;
             }
-            repaint();
+            preDraw();
             render();
             frames++;
 
