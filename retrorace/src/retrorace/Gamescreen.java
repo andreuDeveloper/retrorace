@@ -26,10 +26,14 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
         this.addKeyListener(this);
         this.gui=gui;
         this.partida = partida;
+        this.partida.getMapa().iniciarMapa();
     }
 
     public void setPartida(Partida partida) {
         this.partida = partida;
+        this.partida.getMapa().iniciarMapa();
+        this.createBufferStrategy(2);
+        BufferStrategy strategy = this.getBufferStrategy();
     }
 
     @Override
@@ -91,10 +95,10 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
     }
 
     public void paint(Graphics g) {
+        this.partida.getMapa().paint(g);
         for (int i = 0; i < this.partida.totalPersonajes(); i++) {
             this.partida.getPersonaje(i).pintar(g);
         }
-        
     }
 
     @Override

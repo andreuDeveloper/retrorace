@@ -385,10 +385,10 @@ c.ipady=15;
             panelGamescreen.setVisible(true);
             gamescreen.setPartida(sesion.initPartida(numMap));
         }
+
         new Thread(this.gamescreen).start();
-        this.gamescreen.setBackground(Color.red);
+        this.gamescreen.setBackground(new Color(208, 244, 247));  
         this.gamescreen.requestFocus();
-        
     }
 
     private boolean checkExit() {
