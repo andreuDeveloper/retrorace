@@ -15,11 +15,8 @@ public class Retrorace {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        GUI g = new GUI();
-        //Partida p = new Partida();
-       // p.addPersonaje();
-       //Personaje p = new Personaje();
+        Juego j = new Juego();
+        j.initJuego();
     }
     
 }

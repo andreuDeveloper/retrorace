@@ -9,32 +9,427 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JFrame;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import javafx.scene.layout.Border;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
-/**
- *
- * @author sosan
- */
-public class GUI extends JFrame implements KeyListener{
+
     
+   
+public class GUI extends JFrame implements ActionListener, KeyListener {
+
+    private Juego juego;
+    private Sesion sesion;
+
     private Gamescreen gamescreen;
-    Personaje p;
+
+    private JPanel panelLogin;
+    private JPanel panelMenu;
+    private JPanel panelMapChoice;
+    private JPanel panelGamescreen;
+
+    private JButton btnExit;
+    private JButton btnBack;
+
+    /*Login panel*/
+    private JTextField txtUsername;
+    private JTextField txtPassword;
+    private JButton btnLogin;
+    private JButton btnRegister;
+    private JLabel lblErrorLogin;
+
+    /*Menu panel*/
+    private JButton btnSinglePlayer;
+    private JButton btnMultiPlayer;
+    private JButton btnRanking;
+
+    /*Choice Map panel*/
+    private ArrayList<JButton> btnMap;
+
     //ranking
-    
-    public GUI () {
-        this.addKeyListener(this);
-        this.setVisible(true);
-        this.setSize(500, 900);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Partida pa = new Partida();
-        this.gamescreen = new Gamescreen(pa);
-        this.add(gamescreen);
-        p = new Personaje(pa);
-        pa.addPersonaje(p);
-        new Thread(this.gamescreen).start();
+    /*CONSTRUCTOR*/
+    public GUI(Juego j) {
+
+        this.juego = j;
     }
-    
-    
-    
+
+    /*GETTERS Y SRTTERS*/
+    public void setSesion(Sesion sesion) {
+        this.sesion = sesion;
+    }
+
+    public void initGUI() {
+        this.setResizable(false);
+        this.setUndecorated(true);
+        this.setAlwaysOnTop(true);
+        GraphicsDevice gd
+                = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+
+        if (gd.isFullScreenSupported()) {
+            setUndecorated(true);
+            gd.setFullScreenWindow(this);
+        } else {
+            System.err.println("Full screen not supported");
+        }
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        this.addUIComponents(getContentPane());
+
+        setVisible(true);
+    }
+
+    private void addUIComponents(Container panel) {
+        panel.add(createComponentExit(), BorderLayout.NORTH);
+        panel.add(createComponentLogin(), BorderLayout.CENTER);
+    }
+
+    private JPanel createComponentExit() {
+        JPanel p = new JPanel();
+        p.setLayout(new GridBagLayout());
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(5, 5, 5, 5);
+
+        btnBack = new JButton("Volver");
+        btnBack.addActionListener(this);
+        btnBack.setVisible(false);
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 1.0d;
+        c.anchor = GridBagConstraints.LINE_START;
+
+        p.add(btnBack, c);
+
+        btnExit = new JButton("X");
+        btnExit.addActionListener(this);
+
+        c.gridx = 1;
+        c.anchor = GridBagConstraints.LINE_END;
+
+        p.add(btnExit, c);
+
+        return p;
+    }
+
+    private JPanel createComponentGamescreen() {
+        panelGamescreen = new JPanel(new FlowLayout());
+        this.gamescreen = new Gamescreen(this);
+
+        //panelGamescreen.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        panelGamescreen.add(gamescreen);
+
+        return panelGamescreen;
+    }
+
+    private JPanel createComponentLogin() {
+        panelLogin = new JPanel();
+        int margin = 2 * this.getWidth() / 5;
+        panelLogin.setBorder(BorderFactory.createEmptyBorder(0, margin, 0, margin));
+        panelLogin.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.insets = new Insets(5, 5, 5, 5);
+
+        JLabel lblWelcome = new JLabel("BIENVENIDO");
+        lblWelcome.setFont(new Font("Arial Black", 0, 28));
+        lblWelcome.setForeground(Color.BLUE);
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 2;
+        c.ipady = 35;
+
+        c.fill = GridBagConstraints.CENTER;
+        panelLogin.add(lblWelcome, c);
+
+        JLabel lblUsername = new JLabel("Usuario");
+
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 2;
+        c.ipady = 10;
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panelLogin.add(lblUsername, c);
+
+        txtUsername = new JTextField();
+
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.BOTH;
+        panelLogin.add(txtUsername, c);
+
+        JLabel lblPassword = new JLabel("Password");
+
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panelLogin.add(lblPassword, c);
+
+        txtPassword = new JPasswordField();
+        txtPassword.setEnabled(false);
+        txtPassword.setEditable(false);//CAMBIA
+
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.BOTH;
+        panelLogin.add(txtPassword, c);
+
+        btnLogin = new JButton("Entrar");
+        btnRegister = new JButton("Registrarse");
+        btnLogin.addActionListener(this);
+        btnRegister.addActionListener(this);
+        btnRegister.setEnabled(false);//CAMBIA
+
+        JPanel panelAuxBtn = new JPanel(new GridLayout(1, 2, 5, 5));
+        panelAuxBtn.add(btnLogin);
+        panelAuxBtn.add(btnRegister);
+
+        c.gridx = 0;
+        c.gridy = 5;
+        c.gridwidth = 2;
+
+        c.weightx = 1.0d;
+
+        panelLogin.add(panelAuxBtn, c);
+
+        lblErrorLogin = new JLabel("");
+        lblErrorLogin.setFont(new Font("Arial", 0, 12));
+        lblErrorLogin.setForeground(Color.RED);
+
+        c.gridx = 0;
+        c.gridy = 6;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.CENTER;
+
+        panelLogin.add(lblErrorLogin, c);
+
+        /*c.gridx = 0;
+        c.gridy = 5;
+        c.gridwidth = 1;
+        c.ipady=10;
+        c.weightx=0.4d;
+        
+        panelLogin.add(btnLogin, c);
+        
+        
+        c.gridx = 1;
+        c.gridy = 5;
+   
+        panelLogin.add(btnRegister, c);*/
+        return panelLogin;
+    }
+
+    private JPanel createComponentMapChoice() {
+        panelMapChoice = new JPanel();
+        int margin = 2 * this.getWidth() / 5;
+        panelMapChoice.setBorder(BorderFactory.createEmptyBorder(0, margin, 0, margin));
+        panelMapChoice.setLayout(new GridBagLayout());
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(5, 5, 5, 5);
+
+        JLabel lblWelcomeMap = new JLabel("Elige un mapa");
+        lblWelcomeMap.setFont(new Font("Arial Black", 0, 28));
+        lblWelcomeMap.setForeground(Color.BLUE);
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.ipady = 35;
+
+        c.fill = GridBagConstraints.CENTER;
+
+        panelMapChoice.add(lblWelcomeMap, c);
+
+        int numMaps = sesion.getMapas().size();
+        btnMap = new ArrayList();
+
+        JPanel panelAuxMaps = new JPanel(new GridLayout(3, 1, 5, 15));
+
+        btnMap.add(new JButton("Mapa 1"));
+        btnMap.add(new JButton("Mapa 2"));
+        btnMap.add(new JButton("Mapa 3"));
+
+        for (JButton btnAux : btnMap) {
+            panelAuxMaps.add(btnAux);
+            btnAux.addActionListener(this);
+        }
+
+        c.gridx = 0;
+        c.gridy = 1;
+
+        c.weightx = 1.0d;
+        c.fill = GridBagConstraints.BOTH;
+
+        panelMapChoice.add(panelAuxMaps, c);
+
+        return panelMapChoice;
+    }
+
+    private JPanel createComponentMenu() {
+        panelMenu = new JPanel();
+        int margin = 2 * this.getWidth() / 5;
+        panelMenu.setBorder(BorderFactory.createEmptyBorder(0, margin, 0, margin));
+        panelMenu.setLayout(new GridBagLayout());
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(5, 5, 5, 5);
+
+        JLabel lblWelcome = new JLabel("Bienvenido " + sesion.getUsername());
+        lblWelcome.setFont(new Font("Arial Black", 0, 28));
+        lblWelcome.setForeground(Color.BLUE);
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.ipady = 35;
+
+        c.fill = GridBagConstraints.CENTER;
+
+        panelMenu.add(lblWelcome, c);
+
+        btnSinglePlayer = new JButton("Un jugador");
+        btnSinglePlayer.addActionListener(this);
+
+        btnMultiPlayer = new JButton("Multijugador");
+        btnMultiPlayer.addActionListener(this);
+        btnMultiPlayer.setEnabled(false);
+
+        btnRanking = new JButton("Ranking");
+        btnRanking.addActionListener(this);
+        btnRanking.setEnabled(false);
+
+        JPanel panelAuxMenu = new JPanel(new GridLayout(3, 1, 5, 15));
+        panelAuxMenu.add(btnSinglePlayer);
+        panelAuxMenu.add(btnMultiPlayer);
+        panelAuxMenu.add(btnRanking);
+
+        c.gridx = 0;
+        c.gridy = 1;
+
+        c.weightx = 1.0d;
+        c.fill = GridBagConstraints.BOTH;
+
+        panelMenu.add(panelAuxMenu, c);
+
+        return panelMenu;
+    }
+
+    private void initSesion() {
+        //CAMBIAR 
+        String username = txtUsername.getText();
+        if (checkUser(username)) {
+            panelLogin.setVisible(false);
+            juego.initSesion(username);
+            this.getContentPane().add(createComponentMenu(), BorderLayout.CENTER);
+        } else {
+            lblErrorLogin.setText("ERROR: Introduce un nombre de usuario");
+        }
+    }
+
+    private void initSinglePlayer() {
+        panelMenu.setVisible(false);
+        btnBack.setVisible(true);
+        if (panelMapChoice == null) {
+            this.getContentPane().add(createComponentMapChoice(), BorderLayout.CENTER);
+        } else {
+            panelMapChoice.setVisible(true);
+        }
+
+    }
+
+    private void initPartida() {
+        panelMapChoice.setVisible(false);
+        if (panelGamescreen == null) {
+            gamescreen = new Gamescreen(this);
+            this.getContentPane().add(createComponentGamescreen(), BorderLayout.CENTER);
+            panelGamescreen.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+            gamescreen.setSize(getWidth(), getHeight() - btnExit.getHeight() - 2 * btnExit.getY());
+
+        } else {
+            panelGamescreen.setVisible(true);
+        }
+        panelGamescreen.setBackground(Color.CYAN);
+        this.gamescreen.setBackground(Color.red);
+    }
+
+    private boolean checkExit() {
+        int resp = JOptionPane.showInternalConfirmDialog(this.getContentPane(), "¿Seguro que quieres salir?", "Salir", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        return resp == 0;
+    }
+
+    private boolean checkUser(String username) {
+        //CAMBIAR checkear user y password
+        return !(username.equals(""));
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        JButton btnAux = (JButton) e.getSource();
+
+        if (btnAux == btnExit) {
+            if (checkExit()) {
+                System.exit(0);
+            }
+        }
+
+        //Acciones en panel login
+        if (panelLogin.isVisible()) {
+            if (btnAux == btnLogin) {
+                initSesion();
+            }
+            //Acciones panel menu
+        } else if (panelMenu.isVisible()) {
+            if (btnAux == btnSinglePlayer) {
+                initSinglePlayer();
+            }
+        } else if (panelMapChoice.isVisible()) {
+            if (btnAux == btnBack) {
+                panelMapChoice.setVisible(false);
+                panelMenu.setVisible(true);
+                btnBack.setVisible(false);
+            }
+            for (JButton btnAuxMap : btnMap) {
+                if (btnAuxMap == btnAux) {
+                    //System.out.println(btnMap.indexOf(btnAuxMap));
+                    initPartida();
+                }
+            }
+        }
+    }
+  
+  
      @Override
     public void keyTyped(KeyEvent ke) {
         //System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
@@ -65,5 +460,5 @@ public class GUI extends JFrame implements KeyListener{
     @Override
     public void keyReleased(KeyEvent ke) {
         //System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
-    }
+
 }
