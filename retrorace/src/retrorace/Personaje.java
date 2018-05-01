@@ -28,12 +28,13 @@ import javax.swing.ImageIcon;
 public class Personaje implements Runnable {
 
     private double x, y;
+    private double ancho, alto;
     private double velX = 0, velY = 0;
     private boolean falling = true;
     private boolean jumping = false;
     private boolean movingLeft = false;
     private boolean movingRight = false;
-    private boolean estaEnSuelo = false;
+    private boolean estaSobreSuelo = false;
     private String lastDirection = "Right";
     private Partida partida;
     private int timeAc = 33;
@@ -54,8 +55,14 @@ public class Personaje implements Runnable {
                     velY += this.partida.getGravedad();
                     //max vel
                 }
-
-                if (y > 400) {
+                if (y >= 420) {
+                    estaSobreSuelo = true;
+                    y = 420;
+                } else {
+                    estaSobreSuelo = false;
+                }
+                
+                if (estaSobreSuelo) {
                     velY = 0;
                     falling = false;
                     jumping = false;
@@ -132,6 +139,14 @@ public class Personaje implements Runnable {
         this.movingRight = movingRight;
     }
 
+    public double getAncho() {
+        return ancho;
+    }
+
+    public double getAlto() {
+        return alto;
+    }    
+
     private void moverPersonaje() {
         if (this.movingLeft) {
             lastDirection = "Left";
@@ -150,6 +165,8 @@ public class Personaje implements Runnable {
         BufferedImage img = null;
         try {
             img = ImageIO.read(new File(imgPath));
+            this.alto = img.getHeight();
+            this.ancho = img.getWidth();
         } catch (IOException e) {
         }
         g.drawImage(img,(int) x, (int) y, null);
@@ -165,7 +182,7 @@ public class Personaje implements Runnable {
 
     public void saltar() {
         if (!jumping && !falling) {
-            velY = - 15;
+            velY = - 20;
             this.y = y + velY;
             jumping = true;
         }
