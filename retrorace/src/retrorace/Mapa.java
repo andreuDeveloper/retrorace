@@ -79,10 +79,12 @@ public class Mapa extends JPanel {
      * @return Casilla
      */
     public Casilla getCasilla(int x, int y) {
-        System.out.println("DIST"+this.distribucion[y][x]);
-        System.out.println("CAS"+this.casillas);
-        System.out.println("met"+this.casillas.get(this.distribucion[y][x]));
-        return this.casillas.get(this.distribucion[y][x]);
+        try {
+            return this.casillas.get(this.distribucion[y][x]);
+        } catch (Exception e) {
+            return null;
+        }
+        
     }
 
     @Override
