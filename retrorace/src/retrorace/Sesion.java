@@ -5,7 +5,14 @@
  */
 package retrorace;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -37,11 +44,21 @@ public class Sesion {
     }
 
     
-    private void loadMaps(){
-        /*ArrayList<Mapa> mapas;
-        Gson gson = new Gson();
-        mapas = gson.fromJson(new FileReader("data/mapas.json"), new TypeToken<List<Mapa>>() {
-        }.getType());*/
+    public void loadMaps(){
+        try {
+            Gson gson = new Gson();
+            mapas = gson.fromJson(new FileReader("data/mapas.json"), new TypeToken<List<Mapa>>() {
+            }.getType());
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Sesion.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public Partida initPartida(int numMap){
+        partida = new Partida(mapas.get(numMap));
+        new Thread(partida).start();
+        return partida;
+
     }
     
     
