@@ -10,6 +10,8 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -19,6 +21,7 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
 
     private Partida partida;
     private GUI gui;
+    private final Set<Character> pressed = new HashSet<Character>();
 
     
     public Gamescreen(GUI gui, Partida partida){
@@ -31,8 +34,6 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
     public void setPartida(Partida partida) {
         this.partida = partida;
         this.partida.getMapa().iniciarMapa();
-        this.createBufferStrategy(2);
-        BufferStrategy strategy = this.getBufferStrategy();
     }
 
     @Override
@@ -104,6 +105,7 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent ke) {
+        /*
         int key = ke.getKeyCode();
         System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
         
@@ -123,33 +125,36 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
                 break;
             default:    //Other keys
         }
+        */
     }
 
     @Override
-    public  void keyPressed(KeyEvent ke) {
+    public synchronized void keyPressed(KeyEvent ke) {
         int key = ke.getKeyCode();
         System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
-        
-        switch (key) {
-            case 37:    //Left
-                this.partida.getPersonaje(0).moverIzquerda();
-                break;
-            case 38:    //Up
-            case 32:    
-                this.partida.getPersonaje(0).moverArriba();
-                break;
-            case 39:    //Right
-                this.partida.getPersonaje(0).moverDerecha();
-                break;
-            case 40:    //Down
-                this.partida.getPersonaje(0).moverAbajo();
-                break;
-            default:    //Other keys
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent ke) {
+        pressed.add(ke.getKeyChar());
+        System.out.println(ke.getKeyChar());
        
+        switch (key) {
+            case 37:    //Left
+                this.partida.getPersonaje(0).moverIzquerda();
+                break;
+            case 38:    //Up
+            case 32:    
+                this.partida.getPersonaje(0).moverArriba();
+                break;
+            case 39:    //Right
+                this.partida.getPersonaje(0).moverDerecha();
+                break;
+            case 40:    //Down
+                this.partida.getPersonaje(0).moverAbajo();
+                break;
+            default:    //Other keys
+        }
+    }
+
+    @Override
+    public synchronized void keyReleased(KeyEvent ke) {
+       pressed.remove(ke.getKeyChar());
     }
 }
