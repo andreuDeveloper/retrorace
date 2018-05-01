@@ -10,6 +10,8 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -19,11 +21,11 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
 
     private Partida partida;
     private GUI gui;
+    private final Set<Character> pressed = new HashSet<Character>();
 
-    
-    public Gamescreen(GUI gui, Partida partida){
+    public Gamescreen(GUI gui, Partida partida) {
         this.addKeyListener(this);
-        this.gui=gui;
+        this.gui = gui;
         this.partida = partida;
         this.partida.getMapa().iniciarMapa();
     }
@@ -31,8 +33,6 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
     public void setPartida(Partida partida) {
         this.partida = partida;
         this.partida.getMapa().iniciarMapa();
-        this.createBufferStrategy(2);
-        BufferStrategy strategy = this.getBufferStrategy();
     }
 
     @Override
@@ -49,29 +49,19 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
             delta += (now - lastTime) / ns;
             lastTime = now;
             while (delta >= 1) {
-                tick();
                 updates++;
                 delta--;
             }
-            preDraw();            
-            render();
+            preDraw();
             frames++;
 
             if (System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
-                System.out.println("FPS: " + frames + " TICKS: " + updates);
+                //System.out.println("FPS: " + frames + " TICKS: " + updates);
                 frames = 0;
                 updates = 0;
             }
         }
-    }
-
-    private void tick() {
-
-    }
-
-    private void render() {
-
     }
 
     private void preDraw() { //Method which prepares the screen for drawing
@@ -85,7 +75,7 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
         g.setColor(getBackground());
         g.fillRect(0, 0, WIDTH, HEIGHT); //Fill the screen with the canvas' background color
         g.setColor(getForeground());
-       
+
         //repaint();
         paint(g); //Call our draw method, passing in the graphics object which we just got from our buffer strategy
 
@@ -96,7 +86,9 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
     public void paint(Graphics g) {
         g.setColor(this.getBackground());
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
+        //this.partida.getMapa().mover(g, (int)this.partida.getPersonaje(0).getX());
         this.partida.getMapa().paint(g);
+        //Pintar personajes
         for (int i = 0; i < this.partida.totalPersonajes(); i++) {
             this.partida.getPersonaje(i).pintar(g);
         }
@@ -104,45 +96,27 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent ke) {
-        int key = ke.getKeyCode();
-        System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
-        
-        switch (key) {
-            case 37:    //Left
-                this.partida.getPersonaje(0).moverIzquerda();
-                break;
-            case 38:    //Up
-            case 32:    
-                this.partida.getPersonaje(0).moverArriba();
-                break;
-            case 39:    //Right
-                this.partida.getPersonaje(0).moverDerecha();
-                break;
-            case 40:    //Down
-                this.partida.getPersonaje(0).moverAbajo();
-                break;
-            default:    //Other keys
-        }
+       
     }
 
     @Override
-    public  void keyPressed(KeyEvent ke) {
+    public void keyPressed(KeyEvent ke) {
         int key = ke.getKeyCode();
-        System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
-        
+        System.out.println("keyPressed=" + KeyEvent.getKeyText(ke.getKeyCode()));
+
         switch (key) {
             case 37:    //Left
-                this.partida.getPersonaje(0).moverIzquerda();
+                this.partida.getPersonaje(0).setMovingLeft(true);
                 break;
             case 38:    //Up
-            case 32:    
-                this.partida.getPersonaje(0).moverArriba();
+            case 32:
+                this.partida.getPersonaje(0).saltar();
                 break;
             case 39:    //Right
-                this.partida.getPersonaje(0).moverDerecha();
+                this.partida.getPersonaje(0).setMovingRight(true);
                 break;
             case 40:    //Down
-                this.partida.getPersonaje(0).moverAbajo();
+                //this.partida.getPersonaje(0).caer();
                 break;
             default:    //Other keys
         }
@@ -150,6 +124,17 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
 
     @Override
     public void keyReleased(KeyEvent ke) {
-       
+        int key = ke.getKeyCode();
+        System.out.println("keyReleased=" + KeyEvent.getKeyText(ke.getKeyCode()));
+
+        switch (key) {
+            case 37:    //Left
+                this.partida.getPersonaje(0).setMovingLeft(false);
+                break;
+            case 39:    //Right
+                this.partida.getPersonaje(0).setMovingRight(false);
+                break;
+            default:    //Other keys
+        }
     }
 }

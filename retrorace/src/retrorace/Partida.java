@@ -5,6 +5,7 @@
  */
 package retrorace;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +40,7 @@ public class Partida implements Runnable {
         iniciarPartida();
         while (activa) {
             //Check position %xcasilla
+            checkPosition(this.personajes.get(0).getCoordenadas());
             
             try {
                 Thread.sleep(50);
@@ -78,5 +80,25 @@ public class Partida implements Runnable {
         return gravedad;
     }
 
+    private void checkPosition(Point pos){
+        //Recoger la casilla donde nos encontramos, y hacer x cosas segun la casilla
+        int xCas = pos.x / this.mapa.getCasilla(1, 1).getImage().getWidth(null);
+        int yCas = pos.y / this.mapa.getCasilla(1, 1).getImage().getWidth(null);
+        
+        System.out.println("Casila Fila " + xCas +" Casilla columna: "+ yCas);
+        System.out.println("Propiedad: " + this.mapa.getCasilla(xCas, yCas).getPropiedad());
+        
+        
+    }
+    
+    private void checkIfCaida(int x){
+        if (x > 455) {
+            if (!this.personajes.get(0).isFalling()) {
+                this.personajes.get(0).setY(501);
+                this.personajes.get(0).setFalling(true);
+            }
+        } 
+        
+    }
 
 }
