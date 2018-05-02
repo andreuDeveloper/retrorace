@@ -37,10 +37,10 @@ public class Personaje implements Runnable {
     private boolean estaSobreSuelo = false;
     private String lastDirection = "Right";
     private Partida partida;
-    private int timeAc = 33;
+    private int timeAc = 30;
 
     public Personaje(Partida partida) {
-        this.x = 0;
+        this.x = 3;
         this.y = 0;
         this.partida = partida;
     }
@@ -55,18 +55,14 @@ public class Personaje implements Runnable {
                     velY += this.partida.getGravedad();
                     //max vel
                 }
+                /*
                 if (y >= 420) {
                     estaSobreSuelo = true;
                     y = 420;
                 } else {
                     estaSobreSuelo = false;
                 }
-                
-                if (estaSobreSuelo) {
-                    velY = 0;
-                    falling = false;
-                    jumping = false;
-                }
+                 */
 
                 Thread.sleep(timeAc);
             } catch (InterruptedException ex) {
@@ -115,6 +111,22 @@ public class Personaje implements Runnable {
         this.falling = falling;
     }
 
+    public boolean isEstaSobreSuelo() {
+        return estaSobreSuelo;
+    }
+
+    public void setEstaSobreSuelo(boolean estaSobreSuelo) {
+        this.estaSobreSuelo = estaSobreSuelo;
+        if (estaSobreSuelo) {
+            velY = 0;
+            falling = false;
+            jumping = false;
+        } else {
+            falling = true;
+        }
+
+    }
+
     public boolean isJumping() {
         return jumping;
     }
@@ -145,7 +157,7 @@ public class Personaje implements Runnable {
 
     public double getAlto() {
         return alto;
-    }    
+    }
 
     private void moverPersonaje() {
         if (this.movingLeft) {
@@ -169,11 +181,14 @@ public class Personaje implements Runnable {
             this.ancho = img.getWidth();
         } catch (IOException e) {
         }
-        g.drawImage(img,(int) x, (int) y, null);
+        g.drawImage(img, (int) x, (int) y, null);
+        //g.drawImage(img, 0, (int) y, null);
     }
 
     public void moverIzquerda() {
-        this.x = x - 3;
+        if (x >= 5) {
+            this.x = x - 3;
+        }
     }
 
     public void moverDerecha() {
@@ -186,21 +201,20 @@ public class Personaje implements Runnable {
             this.y = y + velY;
             jumping = true;
         }
-
     }
 
-    /*
-    public void caer() {
-        if (y < 500) {
-            this.y = y + 5;
-            if (timeAc > 5) {
-                this.timeAc *= 0.95;
-            }
+    public void reset(Point lastCheck) {
+        this.estaSobreSuelo = false;
+        this.velY = 0;
+        this.velX = 0;
+        if (lastCheck != null) {
+            this.x = lastCheck.x;
+            this.y = lastCheck.y;
         } else {
-            timeAc = 100;
+            this.x = 0;
+            this.y = 0;
         }
     }
-*/
 
     public Point getCoordenadas() {
         return new Point((int) x, (int) y);
