@@ -108,6 +108,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     private void addUIComponents(Container panel) {
         panel.add(createComponentExit(), BorderLayout.NORTH);
         panel.add(createComponentLogin(), BorderLayout.CENTER);
+        txtUsername.requestFocus();
     }
 
     private JPanel createComponentExit() {
@@ -183,6 +184,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         panelLogin.add(lblUsername, c);
 
         txtUsername = new JTextField();
+        txtUsername.addKeyListener(this);
 
         c.gridx = 0;
         c.gridy = 2;
@@ -438,11 +440,10 @@ c.ipady=15;
             }
         }else if(panelGamescreen.isVisible()){
             if (btnAux == btnBack) {
+                sesion.endPartida();
                 panelMapChoice.setVisible(true);
                 panelGamescreen.setVisible(false);
 
-                
-                //PAUSAR PARTIDA O TERMINARLA //CAMBIAR
             }
         }
     }
@@ -454,8 +455,11 @@ c.ipady=15;
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        
-
+        if (ke.getSource() == this.txtUsername) {
+            if (ke.VK_ENTER == ke.getKeyCode()) {
+                this.initSesion();
+            }
+        }
     }
 
     @Override
