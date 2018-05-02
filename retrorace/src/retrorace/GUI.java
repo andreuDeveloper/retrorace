@@ -83,18 +83,17 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
     public void initGUI() {
         this.setResizable(true);
-        this.setSize(800, 500);
-        this.setUndecorated(false);
+        this.setUndecorated(true);
         this.setAlwaysOnTop(true);
         GraphicsDevice gd
                 = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        /*
+        
         if (gd.isFullScreenSupported()) {
             setUndecorated(true);
             gd.setFullScreenWindow(this);
         } else {
             System.err.println("Full screen not supported");
-        }*/
+        }
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.addUIComponents(getContentPane());

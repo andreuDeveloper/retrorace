@@ -5,6 +5,7 @@
  */
 package retrorace;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,8 +18,7 @@ public class Partida implements Runnable {
 
     private ArrayList<Personaje> personajes; //Por defecto 0 es el nuestro
     private boolean activa;
-    private final double gravedad = 9.8;
-    private final double dt = 0.016683;
+    private final double gravedad = 1.5;
     private Mapa mapa;
 
     public Partida(Mapa mapa) {
@@ -34,13 +34,14 @@ public class Partida implements Runnable {
             new Thread(this.personajes.get(i)).start();
         }
     }
-    
+
     @Override
     public void run() {
         iniciarPartida();
         while (activa) {
             //Check position %xcasilla
-            
+            checkPosition(this.personajes.get(0).getCoordenadas());
+
             try {
                 Thread.sleep(50);
             } catch (InterruptedException ex) {
@@ -48,7 +49,7 @@ public class Partida implements Runnable {
             }
         }
     }
-    
+
     public Mapa getMapa() {
         return mapa;
     }
@@ -79,9 +80,29 @@ public class Partida implements Runnable {
         return gravedad;
     }
 
-    public double getDt() {
-        return dt;
+    private void checkPosition(Point pos) {
+        //Recoger la casilla donde nos encontramos, y hacer x cosas segun la casilla
+        Casilla aux = this.mapa.getCasilla(0, 0);
+        if (aux != null) {
+            int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
+            int xIzquierda = pos.x / anchoCasillas;
+            int xDerecha = (pos.x + (int) this.personajes.get(0).getAncho()) / anchoCasillas;
+            int yCabeza = pos.y / anchoCasillas;
+            int ySuelo = (pos.y + (int) this.personajes.get(0).getAlto()) / anchoCasillas;
+            
+            System.out.println("Y: "+ySuelo+ " .. X: "+xIzquierda+" -- "+this.mapa.getCasilla(ySuelo, xIzquierda).getPropiedad());
+        }
+
     }
 
+    private void checkIfCaida(int x) {
+        if (x > 455) {
+            if (!this.personajes.get(0).isFalling()) {
+                this.personajes.get(0).setY(501);
+                this.personajes.get(0).setFalling(true);
+            }
+        }
+
+    }
 
 }

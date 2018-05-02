@@ -29,7 +29,7 @@ public class Mapa extends JPanel {
     private String nombre, imgRoute;
     private ArrayList<Casilla> casillas;
     private int[][] distribucion;
-    private int x_pj, inicioMapa, finMapa,anchoMapa;
+    private int x_pj, inicioMapa, finMapa, anchoMapa;
     private Dimension screenSize;
     private Image image;
 
@@ -61,24 +61,30 @@ public class Mapa extends JPanel {
      * @param x coordenada Int
      */
     public void mover(Graphics g, int x) {
-        if(x>this.distribucion[0].length){
-            this.x_pj = this.distribucion[0].length-this.anchoMapa;
-        }else if (x<0){
-             this.x_pj = 0;
-        }else{
-             this.x_pj = x;
+        if (x > this.distribucion[0].length) {
+            this.x_pj = this.distribucion[0].length - this.anchoMapa;
+        } else if (x < 0) {
+            this.x_pj = 0;
+        } else {
+            this.x_pj = x;
         }
         paint(g);
     }
-    
+
     /**
      * Devuelve la casilla en relación a las coordenadas proporcionadas
-     * @param x 
-     * @param y 
+     *
+     * @param x
+     * @param y
      * @return Casilla
      */
-    public Casilla getCasilla(int x, int y){
-        return this.casillas.get(this.distribucion[y+this.inicioMapa][x]);
+    public Casilla getCasilla(int x, int y) {
+        try {
+            return this.casillas.get(this.distribucion[y][x]);
+        } catch (Exception e) {
+            return null;
+        }
+        
     }
 
     @Override
@@ -92,8 +98,6 @@ public class Mapa extends JPanel {
                 int w = i.getWidth(null);
                 int h = i.getHeight(null);
                 g.drawImage(i, xs, y, w, h, null);
-                
-
             }
         }
         Toolkit.getDefaultToolkit().sync();
@@ -115,7 +119,7 @@ public class Mapa extends JPanel {
         mitadDist = this.distribucion.length / 2;
         this.inicioMapa = mitadDist - mitadCantidadCasillas;
         this.finMapa = mitadDist + mitadCantidadCasillas;
-        this.anchoMapa = this.screenSize.width/ i.getWidth(null);
+        this.anchoMapa = this.screenSize.width / i.getWidth(null);
     }
 
     public int[][] getDistribucion() {
@@ -145,6 +149,5 @@ public class Mapa extends JPanel {
     public int getAnchoMapa() {
         return anchoMapa;
     }
-    
 
 }
