@@ -58,7 +58,10 @@ public class Sesion {
         partida = new Partida(mapas.get(numMap));
         new Thread(partida).start();
         return partida;
-
+    }
+    
+    public void endPartida(){
+        this.partida.setActiva(false);
     }
     
     
