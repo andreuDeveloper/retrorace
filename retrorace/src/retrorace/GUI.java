@@ -140,10 +140,13 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     }
 
     private JPanel createComponentGamescreen() {
-        panelGamescreen = new JPanel(new FlowLayout());
+        panelGamescreen = new JPanel();
+        panelGamescreen.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
 
         //panelGamescreen.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        panelGamescreen.add(gamescreen);
+        panelGamescreen.add(gamescreen,c);
+        panelGamescreen.setBackground(Color.BLACK);
 
         return panelGamescreen;
     }
@@ -378,8 +381,8 @@ c.ipady=15;
         if (panelGamescreen == null) {
             gamescreen = new Gamescreen(this,sesion.initPartida(numMap));
             this.getContentPane().add(createComponentGamescreen(), BorderLayout.CENTER);
-            panelGamescreen.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
-            gamescreen.setSize(getWidth(), getHeight() - btnExit.getHeight() - 2 * btnExit.getY());
+            //gamescreen.setSize(getWidth(), getHeight() - btnExit.getHeight() - 2 * btnExit.getY());
+            gamescreen.setSize(1280, 700);
         } else {
             panelGamescreen.setVisible(true);
             gamescreen.setPartida(sesion.initPartida(numMap));
