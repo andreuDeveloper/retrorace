@@ -65,13 +65,13 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
     }
 
     private void preDraw() { //Method which prepares the screen for drawing
-        BufferStrategy bs = getBufferStrategy(); //Gets the buffer strategy our canvas is currently using
+        BufferStrategy bs = this.getBufferStrategy(); //Gets the buffer strategy our canvas is currently using
         if (bs == null) { //True if our canvas has no buffer strategy (should only happen once when we first start the game)
-            createBufferStrategy(2); //Create a buffer strategy using two buffers (double buffer the canvas)
+            this.createBufferStrategy(4); //Create a buffer strategy using two buffers (double buffer the canvas)
             return; //Break out of the preDraw method instead of continuing on, this way we have to check again if bs == null instead of just assuming createBufferStrategy(2) worked
         }
 
-        Graphics g = bs.getDrawGraphics(); //Get the graphics from our buffer strategy (which is connected to our canvas)
+        Graphics g = this.getGraphics(); //Get the graphics from our buffer strategy (which is connected to our canvas)
         g.setColor(getBackground());
         g.fillRect(0, 0, WIDTH, HEIGHT); //Fill the screen with the canvas' background color
         g.setColor(getForeground());
@@ -81,12 +81,18 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
 
         g.dispose(); //Dispose of our graphics object because it is no longer needed, and unnecessarily taking up memory
         bs.show(); //Show the buffer strategy, flip it if necessary (make back buffer the visible buffer and vice versa) 
+        try {
+            Thread.sleep(10); // always a good idea to let is breath a bit
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void paint(Graphics g) {
         g.setColor(this.getBackground());
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        //this.partida.getMapa().mover(g, (int)this.partida.getPersonaje(0).getX());
+
+        this.partida.getMapa().mover(g, ((int)this.partida.getPersonaje(0).getX())/23);
         this.partida.getMapa().paint(g);
         //Pintar personajes
         for (int i = 0; i < this.partida.totalPersonajes(); i++) {
@@ -96,7 +102,7 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent ke) {
-       
+
     }
 
     @Override
