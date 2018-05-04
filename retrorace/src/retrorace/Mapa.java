@@ -29,7 +29,8 @@ public class Mapa extends JPanel {
     private String nombre, imgRoute;
     private ArrayList<Casilla> casillas;
     private int[][] distribucion;
-    private int x_pj, inicioMapa, finMapa,anchoMapa;
+    private int x_pj;
+//    private int inicioMapa, finMapa, anchoMapa;
     private Dimension screenSize;
     private Image image;
 
@@ -45,7 +46,7 @@ public class Mapa extends JPanel {
             setDoubleBuffered(true);
             cargarCasillas();
             this.screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            calcularMapa();
+//            calcularMapa();
             ImageIcon ii = new ImageIcon(imgRoute);
             image = ii.getImage();
 
@@ -61,39 +62,48 @@ public class Mapa extends JPanel {
      * @param x coordenada Int
      */
     public void mover(Graphics g, int x) {
-        if(x>this.distribucion[0].length){
-            this.x_pj = this.distribucion[0].length-this.anchoMapa;
-        }else if (x<0){
-             this.x_pj = 0;
-        }else{
-             this.x_pj = x;
+        if (x > this.distribucion[0].length - 18) {
+            this.x_pj = this.distribucion[0].length - 18;
+        } else if (x < 0) {
+            this.x_pj = 0;
+        } else {
+            this.x_pj = x;
         }
         paint(g);
     }
-    
+
     /**
      * Devuelve la casilla en relación a las coordenadas proporcionadas
-     * @param x 
-     * @param y 
+     *
+     * @param x
+     * @param y
      * @return Casilla
      */
-    public Casilla getCasilla(int x, int y){
-        return this.casillas.get(this.distribucion[y+this.inicioMapa][x]);
+    public Casilla getCasilla(int x, int y) {
+        System.out.println(x +" "+ y);
+        try {
+            if ((this.distribucion.length - 1) < y) {
+                return this.casillas.get(this.distribucion[this.distribucion.length - 1][x]);
+            } else {
+                return this.casillas.get(this.distribucion[y][x]);
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
     public void paint(Graphics g) {
         super.paintComponent(g);
-        for (int row = this.inicioMapa, aux = 0; row <= this.finMapa; row++, aux++) {
-            for (int col = 0; col < this.anchoMapa; col++) {
+        for (int row = 0; row <= 9; row++) {
+            for (int col = 0; col <= 17; col++) {
+
                 Image i = this.casillas.get(this.distribucion[row][col + x_pj]).getImage();
                 int xs = (col * i.getWidth(null));
-                int y = (aux * i.getHeight(null));
+                int y = (row * i.getHeight(null));
                 int w = i.getWidth(null);
                 int h = i.getHeight(null);
                 g.drawImage(i, xs, y, w, h, null);
-                
-
             }
         }
         Toolkit.getDefaultToolkit().sync();
@@ -108,16 +118,15 @@ public class Mapa extends JPanel {
         }
     }
 
-    public void calcularMapa() {
-        int mitadCantidadCasillas, mitadDist;
-        Image i = this.casillas.get(this.distribucion[0][0]).getImage();
-        mitadCantidadCasillas = (this.screenSize.height / i.getHeight(null)) / 2;
-        mitadDist = this.distribucion.length / 2;
-        this.inicioMapa = mitadDist - mitadCantidadCasillas;
-        this.finMapa = mitadDist + mitadCantidadCasillas;
-        this.anchoMapa = this.screenSize.width/ i.getWidth(null);
-    }
-
+//    public void calcularMapa() {
+//        int mitadCantidadCasillas, mitadDist;
+//        Image i = this.casillas.get(this.distribucion[0][0]).getImage();
+//        mitadCantidadCasillas = (this.screenSize.height / i.getHeight(null)) / 2;
+//        mitadDist = this.distribucion.length / 2;
+//        this.inicioMapa = mitadDist - mitadCantidadCasillas;
+//        this.finMapa = mitadDist + mitadCantidadCasillas;
+//        this.anchoMapa = this.screenSize.width / i.getWidth(null);
+//    }
     public int[][] getDistribucion() {
         return distribucion;
     }
@@ -130,10 +139,9 @@ public class Mapa extends JPanel {
         return x_pj;
     }
 
-    public void setX_pj(int x_pj) {
-        this.x_pj = x_pj;
-    }
-
+//    public void setX_pj(int x_pj) {
+//        this.x_pj = x_pj;
+//    }
     public String getNombre() {
         return nombre;
     }
@@ -142,9 +150,7 @@ public class Mapa extends JPanel {
         return image;
     }
 
-    public int getAnchoMapa() {
-        return anchoMapa;
-    }
-    
-
+//    public int getAnchoMapa() {
+//        return anchoMapa;
+//    }
 }

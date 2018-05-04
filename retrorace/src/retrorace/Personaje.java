@@ -8,12 +8,18 @@ package retrorace;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -22,14 +28,19 @@ import java.util.logging.Logger;
 public class Personaje implements Runnable {
 
     private double x, y;
+    private double ancho, alto;
     private double velX = 0, velY = 0;
     private boolean falling = true;
     private boolean jumping = false;
+    private boolean movingLeft = false;
+    private boolean movingRight = false;
+    private boolean estaSobreSuelo = false;
+    private String lastDirection = "Right";
     private Partida partida;
-    private int timeAc = 33;
+    private int timeAc = 30;
 
     public Personaje(Partida partida) {
-        this.x = 0;
+        this.x = 3;
         this.y = 0;
         this.partida = partida;
     }
@@ -44,11 +55,14 @@ public class Personaje implements Runnable {
                     velY += this.partida.getGravedad();
                     //max vel
                 }
-                if (y > 500) {
-                    velY = 0;
-                    falling = false;
-                    jumping = false;
+                /*
+                if (y >= 420) {
+                    estaSobreSuelo = true;
+                    y = 420;
+                } else {
+                    estaSobreSuelo = false;
                 }
+                 */
 
                 Thread.sleep(timeAc);
             } catch (InterruptedException ex) {
@@ -89,46 +103,121 @@ public class Personaje implements Runnable {
         this.velY = velY;
     }
 
+    public boolean isFalling() {
+        return falling;
+    }
+
+    public void setFalling(boolean falling) {
+        this.falling = falling;
+    }
+
+    public boolean isEstaSobreSuelo() {
+        return estaSobreSuelo;
+    }
+
+    public void setEstaSobreSuelo(boolean estaSobreSuelo) {
+        this.estaSobreSuelo = estaSobreSuelo;
+        if (estaSobreSuelo) {
+            velY = 0;
+            falling = false;
+            jumping = false;
+        } else {
+            falling = true;
+        }
+
+    }
+
+    public boolean isJumping() {
+        return jumping;
+    }
+
+    public void setJumping(boolean jumping) {
+        this.jumping = jumping;
+    }
+
+    public boolean isMovingLeft() {
+        return movingLeft;
+    }
+
+    public void setMovingLeft(boolean movingLeft) {
+        this.movingLeft = movingLeft;
+    }
+
+    public boolean isMovingRight() {
+        return movingRight;
+    }
+
+    public void setMovingRight(boolean movingRight) {
+        this.movingRight = movingRight;
+    }
+
+    public double getAncho() {
+        return ancho;
+    }
+
+    public double getAlto() {
+        return alto;
+    }
+
+    private void moverPersonaje() {
+        if (this.movingLeft) {
+            lastDirection = "Left";
+            moverIzquerda();
+        }
+        if (this.movingRight) {
+            lastDirection = "Right";
+            moverDerecha();
+        }
+        //if (this.jumping) saltar();
+    }
+
     public void pintar(Graphics g) {
-        g.setColor(Color.blue);
-        g.fillOval((int) x, (int) y, 70, 70);
+        moverPersonaje();
+        String imgPath = "img/personaje/pj" + lastDirection + ".png";
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(new File(imgPath));
+            this.alto = img.getHeight();
+            this.ancho = img.getWidth();
+        } catch (IOException e) {
+        }
+        g.drawImage(img, (int) x, (int) y, null);
+        //g.drawImage(img, 0, (int) y, null);
     }
 
     public void moverIzquerda() {
-        this.x = x - 10;
+        if (x >= 5) {
+            this.x = x - 3;
+        }
     }
 
     public void moverDerecha() {
-        this.x = x + 10;
+        this.x = x + 3;
     }
 
-    public void moverArriba() {
+    public void saltar() {
         if (!jumping && !falling) {
-            velY = - 15;
+            velY = - 20;
             this.y = y + velY;
             jumping = true;
         }
-
     }
 
-    public void moverAbajo() {
-        if (y < 500) {
-            this.y = y + 5;
-            if (timeAc > 5) {
-                this.timeAc *= 0.95;
-            }
+    public void reset(Point lastCheck) {
+        this.estaSobreSuelo = false;
+        this.velY = 0;
+        this.velX = 0;
+        if (lastCheck != null) {
+            this.x = lastCheck.x;
+            this.y = lastCheck.y;
         } else {
-            timeAc = 100;
+            this.x = 0;
+            this.y = 0;
         }
     }
 
-    private void fall() {
-        int max_vel = 300;
-        this.velY = this.velY + this.partida.getGravedad();
-        if (this.velY > max_vel) {
-            this.velY = max_vel;
-        }
-        this.y = this.y + this.velY;
+    public Point getCoordenadas() {
+        return new Point((int) x, (int) y);
     }
 
 }
