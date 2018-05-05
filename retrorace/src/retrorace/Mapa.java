@@ -24,7 +24,7 @@ import javax.swing.JPanel;
  *
  * @author Andrés
  */
-public class Mapa extends JPanel {
+public class Mapa {
 
     private String nombre, imgRoute;
     private ArrayList<Casilla> casillas;
@@ -43,7 +43,6 @@ public class Mapa extends JPanel {
      */
     public void iniciarMapa() {
         try {
-            setDoubleBuffered(true);
             cargarCasillas();
             this.screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 //            calcularMapa();
@@ -80,7 +79,6 @@ public class Mapa extends JPanel {
      * @return Casilla
      */
     public Casilla getCasilla(int x, int y) {
-        System.out.println(x +" "+ y);
         try {
             if ((this.distribucion.length - 1) < y) {
                 return this.casillas.get(this.distribucion[this.distribucion.length - 1][x]);
@@ -92,10 +90,8 @@ public class Mapa extends JPanel {
         }
     }
 
-    @Override
     public void paint(Graphics g) {
-        super.paintComponent(g);
-        for (int row = 0; row <= 9; row++) {
+        for (int row = 0; row <= 26; row++) {
             for (int col = 0; col <= 17; col++) {
 
                 Image i = this.casillas.get(this.distribucion[row][col + x_pj]).getImage();
