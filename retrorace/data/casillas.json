@@ -22,10 +22,9 @@
 ,
   {
     "id":4,
-    "imgRoute":"img/mapa/casillas/Antorcha_Activa.png",
+    "imgRoute":"img/mapa/casillas/Antorcha_Desactivada.png",
     "propiedad":"checkpoint"
   }
-
 ,
   {
     "id":5,
@@ -38,7 +37,6 @@
     "imgRoute":"img/mapa/casillas/Pinchos.png",
     "propiedad":"eliminatorio"
   }
-
 ,
   {
     "id":7,
@@ -51,4 +49,10 @@
     "imgRoute":"img/mapa/casillas/Nube_der.png",
     "propiedad":"transitable"
   }
+,{
+    "id":9,
+    "imgRoute":"img/mapa/casillas/Antorcha_Activa.png",
+    "propiedad":"checkpoint"
+  }
+
 ]
