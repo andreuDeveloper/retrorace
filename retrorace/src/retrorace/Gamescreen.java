@@ -93,6 +93,12 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
+
+        Graphics g = this.getGraphics();
+        paint(g);
+    }
+
+    public void paint(Graphics g) {
         if ((offGraphics == null)
                 || (this.getWidth() != offDimension.width)
                 || (this.getHeight() != offDimension.height)) {
@@ -100,12 +106,6 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
             offImage = createImage(this.getWidth(), this.getHeight());
             offGraphics = offImage.getGraphics();
         }
-        Graphics g = this.getGraphics();
-        paint(g);
-    }
-
-    public void paint(Graphics g) {
-
         offGraphics.setColor(getBackground());
         offGraphics.fillRect(0, 0, this.getWidth(), this.getHeight());
 

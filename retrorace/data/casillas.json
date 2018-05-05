@@ -1,48 +1,53 @@
 [
-  {
+{
     "id":0,
+    "imgRoute":"img/mapa/casillas/Cielo.png",
+    "propiedad":"transitable"
+  },  
+{
+    "id":1,
     "imgRoute":"img/mapa/casillas/Cielo.png",
     "propiedad":"transitable"
   },
   {
-    "id":1,
+    "id":2,
     "imgRoute":"img/mapa/casillas/Tierra.png",
     "propiedad":"intransitable"
   },
   {
-    "id":2,
+    "id":3,
     "imgRoute":"img/mapa/casillas/Hierba.png",
     "propiedad":"sostenedor"
   }
 ,
   {
-    "id":3,
+    "id":4,
     "imgRoute":"img/mapa/casillas/Antorcha_Activa.png",
     "propiedad":"checkpoint"
   }
 
 ,
   {
-    "id":4,
+    "id":5,
     "imgRoute":"img/mapa/casillas/Fin_Activo.png",
     "propiedad":"finalizable"
   }
 ,
   {
-    "id":5,
+    "id":6,
     "imgRoute":"img/mapa/casillas/Pinchos.png",
     "propiedad":"eliminatorio"
   }
 
 ,
   {
-    "id":6,
+    "id":7,
     "imgRoute":"img/mapa/casillas/Nube_izq.png",
     "propiedad":"transitable"
   }
 ,
   {
-    "id":7,
+    "id":8,
     "imgRoute":"img/mapa/casillas/Nube_der.png",
     "propiedad":"transitable"
   }
