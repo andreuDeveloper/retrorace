@@ -92,7 +92,7 @@ public class Mapa {
 
     public void paint(Graphics g) {
         for (int row = 0; row <= 26; row++) {
-            for (int col = 0; col <= 17; col++) {
+            for (int col = 0; col <= 47; col++) {
 
                 Image i = this.casillas.get(this.distribucion[row][col + x_pj]).getImage();
                 int xs = (col * i.getWidth(null));
