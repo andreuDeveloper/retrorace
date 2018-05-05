@@ -47,23 +47,23 @@ public class Retrorace {
 
     }
 
-    private static void createAndShowGui() throws FileNotFoundException, InterruptedException {
-        ArrayList<Mapa> mapas;
-        Gson gson = new Gson();
-        mapas = gson.fromJson(new FileReader("data/mapas.json"), new TypeToken<List<Mapa>>() {
-        }.getType());
-        mapas.get(0).iniciarMapa();
-
-        JFrame frame = new JFrame("Mapa");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.getContentPane().add(mapas.get(0));
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setSize(screenSize);
-        frame.setVisible(true);
-        for (int x = 15; x <= (mapas.get(0).getDistribucion()[0].length - 10); x++) {
-            mapas.get(0).mover(frame.getGraphics(), x);
-            Thread.sleep(100);
-        }
-    }
+//    private static void createAndShowGui() throws FileNotFoundException, InterruptedException {
+//        ArrayList<Mapa> mapas;
+//        Gson gson = new Gson();
+//        mapas = gson.fromJson(new FileReader("data/mapas.json"), new TypeToken<List<Mapa>>() {
+//        }.getType());
+//        mapas.get(0).iniciarMapa();
+//
+//        JFrame frame = new JFrame("Mapa");
+//        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//        frame.getContentPane().add(mapas.get(0));
+//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//        frame.setSize(screenSize);
+//        frame.setVisible(true);
+//        for (int x = 15; x <= (mapas.get(0).getDistribucion()[0].length - 10); x++) {
+//            mapas.get(0).mover(frame.getGraphics(), x);
+//            Thread.sleep(100);
+//        }
+//    }
 
 }

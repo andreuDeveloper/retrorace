@@ -383,8 +383,8 @@ c.ipady=15;
         if (panelGamescreen == null) {
             gamescreen = new Gamescreen(this,sesion.initPartida(numMap));
             this.getContentPane().add(createComponentGamescreen(), BorderLayout.CENTER);
-            //gamescreen.setSize(getWidth(), getHeight() - btnExit.getHeight() - 2 * btnExit.getY());
-            gamescreen.setSize(1280, 700);
+            gamescreen.setSize(getWidth(), getHeight() - btnExit.getHeight() - 2 * btnExit.getY());
+//            gamescreen.setSize(1280, 700);
         } else {
             panelGamescreen.setVisible(true);
             gamescreen.setPartida(sesion.initPartida(numMap));
