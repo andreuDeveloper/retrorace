@@ -23,7 +23,7 @@
   {
     "id":4,
     "imgRoute":"img/mapa/casillas/Antorcha_Desactivada.png",
-    "propiedad":"checkpoint"
+    "propiedad":"checkpointOff"
   }
 ,
   {
@@ -52,7 +52,7 @@
 ,{
     "id":9,
     "imgRoute":"img/mapa/casillas/Antorcha_Activa.png",
-    "propiedad":"checkpoint"
+    "propiedad":"checkpointOn"
   }
 
 ]

@@ -121,7 +121,8 @@ public class Partida implements Runnable {
     private void checkDerecha(int x, int y) {
         String propiedad = this.mapa.getCasilla(x, y).getPropiedad();
         switch (propiedad) {
-            case "checkpoint":
+            case "checkpointOff":
+                this.mapa.activarAntorcha(x, y);
                 int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
                 this.lastCheckPoint = new Point();
                 this.lastCheckPoint.x = (x - 1) * anchoCasillas + (anchoCasillas / 2);
@@ -135,7 +136,8 @@ public class Partida implements Runnable {
         String propiedad = this.mapa.getCasilla(x, y).getPropiedad();
         int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
         switch (propiedad) {
-            case "checkpoint":
+            case "checkpointOff":
+                this.mapa.activarAntorcha(x, y);
                 this.lastCheckPoint = new Point();
                 this.lastCheckPoint.x = (x - 1) * anchoCasillas + (anchoCasillas / 2);
                 this.lastCheckPoint.y = (int) this.personajes.get(0).getY();
@@ -164,7 +166,8 @@ public class Partida implements Runnable {
         String propiedad = this.mapa.getCasilla(x, y).getPropiedad();
         int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
         switch (propiedad) {
-            case "checkpoint":
+            case "checkpointOff":
+                this.mapa.activarAntorcha(x, y);
                 this.lastCheckPoint = new Point();
                 this.lastCheckPoint.x = (x - 1) * anchoCasillas + (anchoCasillas / 2);
                 this.lastCheckPoint.y = (int) this.personajes.get(0).getY();

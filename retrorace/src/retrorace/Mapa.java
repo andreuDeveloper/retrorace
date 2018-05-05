@@ -100,17 +100,11 @@ public class Mapa {
     }
 
     public void activarAntorcha (int x, int y){
-        
         if(this.distribucion[y][x]==4){
             this.distribucion[y][x]=9;
         }
     }
-        public void desactivarAntorcha (int x, int y){
-            System.out.println(x);
-        if(this.distribucion[y][x]==9){
-            this.distribucion[y][x]=4;
-        }
-    }
+
     
     /*
     Carga todos los tipos de casillas.
