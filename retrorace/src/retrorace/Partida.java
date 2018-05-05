@@ -99,12 +99,14 @@ public class Partida implements Runnable {
                 int xDerecha = (pos.x + (int) this.personajes.get(0).getAncho() + 1) / anchoCasillas;
                 int xCentral = (pos.x + (int) this.personajes.get(0).getAncho() / 2) / anchoCasillas;
                 int yCabeza = pos.y / anchoCasillas;
-                int ySuelo = (pos.y + (int) this.personajes.get(0).getAlto() + 5) / anchoCasillas;
+                int ySuelo = (pos.y + (int) this.personajes.get(0).getAlto() + 10) / anchoCasillas;
+                int yPies = (pos.y + (int) this.personajes.get(0).getAlto() - 1) / anchoCasillas;
 
                 //System.out.println("Y: " + ySuelo + " .. X: " + xIzquierda + " -- " + this.mapa.getCasilla(xIzquierda, ySuelo).getPropiedad());
                 checkDerecha(xDerecha + 1, ySuelo);
                 checkIzquierda(xIzquierda + 1, ySuelo);
                 checkSuelo(xCentral, ySuelo);
+                checkPies(xCentral, yPies);
 
                 /*
             if (this.personajes.get(0).getY() + this.personajes.get(0).getAlto() > ) {
@@ -113,9 +115,8 @@ public class Partida implements Runnable {
                  */
             }
         } catch (Exception e) {
-            
-        }
 
+        }
     }
 
     private void checkDerecha(int x, int y) {
@@ -147,19 +148,40 @@ public class Partida implements Runnable {
     }
 
     public boolean puedeMoverIzquierda(int x, int y) {
+
+        if (x <= 5) {
+            return false;
+        }
+
         int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
         int xIzquierda = x / anchoCasillas;
-        int ySuelo = (y + (int) this.personajes.get(0).getAlto() + 1) / anchoCasillas;
+        int yPies = (y + (int) this.personajes.get(0).getAlto() - 1) / anchoCasillas;
+        int ySuelo = (y + (int) this.personajes.get(0).getAlto() + 10) / anchoCasillas;
+        String propiedadPies = this.mapa.getCasilla(xIzquierda, yPies).getPropiedad();
+        String propiedadSuelo = this.mapa.getCasilla(xIzquierda, ySuelo).getPropiedad();
 
-        return (this.mapa.getCasilla(xIzquierda, ySuelo).getPropiedad() != "intransitable");
+        return !(("intransitable".equals(propiedadPies) || "sostenedor".equals(propiedadPies))
+                && !"transitable".equals(propiedadSuelo));
     }
-    
-    public boolean puedeMoverDerecha(int x, int y) {
-        int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
-        int xIzquierda = x / anchoCasillas;
-        int ySuelo = (y + (int) this.personajes.get(0).getAlto() + 1) / anchoCasillas;
 
-        return (this.mapa.getCasilla(xIzquierda, ySuelo).getPropiedad() != "intransitable");
+    public boolean puedeMoverDerecha(int x, int y) {
+
+        //if (x >= 1915) return false;
+        try {
+            int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
+            int xDerecha = (x + (int) this.personajes.get(0).getAncho() + 1) / anchoCasillas;
+            int yPies = (y + (int) this.personajes.get(0).getAlto() - 1) / anchoCasillas;
+            int ySuelo = (y + (int) this.personajes.get(0).getAlto() + 10) / anchoCasillas;
+            String propiedadPies = this.mapa.getCasilla(xDerecha, yPies).getPropiedad();
+            String propiedadSuelo = this.mapa.getCasilla(xDerecha, ySuelo).getPropiedad();
+
+            return !(("intransitable".equals(propiedadPies) || "sostenedor".equals(propiedadPies))
+                    && !"transitable".equals(propiedadSuelo));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+
     }
 
     private void checkSuelo(int x, int y) {
@@ -182,6 +204,19 @@ public class Partida implements Runnable {
             case "eliminatorio":
                 this.personajes.get(0).reset(lastCheckPoint);
             default:
+        }
+    }
+
+    private void checkPies(int x, int y) {
+        String propiedad = this.mapa.getCasilla(x, y).getPropiedad();
+        int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
+        switch (propiedad) {
+            case "checkpointOff":
+                this.mapa.activarAntorcha(x, y);
+                this.lastCheckPoint = new Point();
+                this.lastCheckPoint.x = (x - 1) * anchoCasillas + (anchoCasillas / 2);
+                this.lastCheckPoint.y = (int) this.personajes.get(0).getY();
+                break;
         }
     }
 
