@@ -100,11 +100,14 @@ public class Partida implements Runnable {
 
             checkDerecha(xDerecha + 1, ySuelo);
             checkIzquierda(xIzquierda + 1, ySuelo);
-            checkSuelo(xCentral, ySuelo + 1);
+            checkSuelo(xCentral, ySuelo);
 
-            if (this.personajes.get(0).getY() > 690) {
+            /*
+            if (this.personajes.get(0).getY() + this.personajes.get(0).getAlto() > ) {
                 this.personajes.get(0).reset(lastCheckPoint);
             }
+            */
+            
         }
 
     }
@@ -134,6 +137,15 @@ public class Partida implements Runnable {
             default:
         }
     }
+    
+    public boolean puedeMoverIzquierda(int x, int y){
+        int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
+        int xIzquierda = x / anchoCasillas;
+        int ySuelo = (y + (int) this.personajes.get(0).getAlto() + 1) / anchoCasillas;
+        
+        return (this.mapa.getCasilla(xIzquierda, ySuelo).getPropiedad() != "intransitable");
+                    
+    }
 
     private void checkSuelo(int x, int y) {
         String propiedad = this.mapa.getCasilla(x, y).getPropiedad();
@@ -149,8 +161,10 @@ public class Partida implements Runnable {
                 break;
             case "sostenedor":
                 this.personajes.get(0).setEstaSobreSuelo(true);
-                this.personajes.get(0).setY((y - 1) * anchoCasillas - (int)this.personajes.get(0).getAlto());
+                this.personajes.get(0).setY((y) * anchoCasillas - (int)this.personajes.get(0).getAlto());
                 break;
+            case "eliminatorio":
+                this.personajes.get(0).reset(lastCheckPoint);
             default:
         }
     }
