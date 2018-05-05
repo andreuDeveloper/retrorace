@@ -77,6 +77,10 @@ public class Partida implements Runnable {
         return this.activa;
     }
 
+    public void setActiva(boolean activa) {
+        this.activa = activa;
+    }
+
     public double getGravedad() {
         return gravedad;
     }

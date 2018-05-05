@@ -60,7 +60,7 @@ public class Retrorace {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setSize(screenSize);
         frame.setVisible(true);
-        for (int x = 15; x <= (mapas.get(0).getDistribucion()[0].length - mapas.get(0).getAnchoMapa()); x++) {
+        for (int x = 15; x <= (mapas.get(0).getDistribucion()[0].length - 10); x++) {
             mapas.get(0).mover(frame.getGraphics(), x);
             Thread.sleep(100);
         }

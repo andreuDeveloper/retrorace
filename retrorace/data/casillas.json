@@ -27,4 +27,23 @@
     "imgRoute":"img/mapa/casillas/Fin_Activo.png",
     "propiedad":"finalizable"
   }
+,
+  {
+    "id":5,
+    "imgRoute":"img/mapa/casillas/Pinchos.png",
+    "propiedad":"eliminatorio"
+  }
+
+,
+  {
+    "id":6,
+    "imgRoute":"img/mapa/casillas/Nube_izq.png",
+    "propiedad":"transitable"
+  }
+,
+  {
+    "id":7,
+    "imgRoute":"img/mapa/casillas/Nube_der.png",
+    "propiedad":"transitable"
+  }
 ]
