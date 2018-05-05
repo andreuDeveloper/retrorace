@@ -197,7 +197,7 @@ public class Personaje implements Runnable {
 
     public void saltar() {
         if (!jumping && !falling) {
-            velY = - 20;
+            velY = - 11;
             this.y = y + velY;
             jumping = true;
         }

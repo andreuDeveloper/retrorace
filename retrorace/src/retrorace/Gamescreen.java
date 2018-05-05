@@ -138,8 +138,8 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
             case 39:    //Right
                 this.partida.getPersonaje(0).setMovingRight(true);
                 break;
-            case 40:    //Down
-                //this.partida.getPersonaje(0).caer();
+            case 82:    //R restart
+                this.partida.getPersonaje(0).reset(this.partida.getLastCheckPoint());
                 break;
             default:    //Other keys
         }

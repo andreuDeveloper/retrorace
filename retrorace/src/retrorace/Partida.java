@@ -18,7 +18,7 @@ public class Partida implements Runnable {
 
     private ArrayList<Personaje> personajes; //Por defecto 0 es el nuestro
     private boolean activa;
-    private final double gravedad = 1.5;
+    private final double gravedad = 1;
     private Mapa mapa;
     private Point lastCheckPoint = null;
 
@@ -44,7 +44,7 @@ public class Partida implements Runnable {
             checkPosition(this.personajes.get(0).getCoordenadas());
 
             try {
-                Thread.sleep(50);
+                Thread.sleep(5);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -53,6 +53,10 @@ public class Partida implements Runnable {
 
     public Mapa getMapa() {
         return mapa;
+    }
+
+    public Point getLastCheckPoint() {
+        return this.lastCheckPoint;
     }
 
     public void addPersonaje() {
@@ -86,27 +90,29 @@ public class Partida implements Runnable {
     }
 
     private void checkPosition(Point pos) {
-        //Recoger la casilla donde nos encontramos, y hacer x cosas segun la casilla
-        Casilla aux = this.mapa.getCasilla(0, 0);
-        if (aux != null) {
-            int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
-            int xIzquierda = pos.x / anchoCasillas;
-            int xDerecha = (pos.x + (int) this.personajes.get(0).getAncho() + 1) / anchoCasillas;
-            int xCentral = (pos.x + (int) this.personajes.get(0).getAncho() / 2) / anchoCasillas;
-            int yCabeza = pos.y / anchoCasillas;
-            int ySuelo = (pos.y + (int) this.personajes.get(0).getAlto() + 1) / anchoCasillas;
+        try {
+            //Recoger la casilla donde nos encontramos, y hacer x cosas segun la casilla
+            Casilla aux = this.mapa.getCasilla(0, 0);
+            if (aux != null) {
+                int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
+                int xIzquierda = pos.x / anchoCasillas;
+                int xDerecha = (pos.x + (int) this.personajes.get(0).getAncho() + 1) / anchoCasillas;
+                int xCentral = (pos.x + (int) this.personajes.get(0).getAncho() / 2) / anchoCasillas;
+                int yCabeza = pos.y / anchoCasillas;
+                int ySuelo = (pos.y + (int) this.personajes.get(0).getAlto() + 5) / anchoCasillas;
 
-            //System.out.println("Y: " + ySuelo + " .. X: " + xIzquierda + " -- " + this.mapa.getCasilla(xIzquierda, ySuelo).getPropiedad());
+                //System.out.println("Y: " + ySuelo + " .. X: " + xIzquierda + " -- " + this.mapa.getCasilla(xIzquierda, ySuelo).getPropiedad());
+                checkDerecha(xDerecha + 1, ySuelo);
+                checkIzquierda(xIzquierda + 1, ySuelo);
+                checkSuelo(xCentral, ySuelo);
 
-            checkDerecha(xDerecha + 1, ySuelo);
-            checkIzquierda(xIzquierda + 1, ySuelo);
-            checkSuelo(xCentral, ySuelo);
-
-            /*
+                /*
             if (this.personajes.get(0).getY() + this.personajes.get(0).getAlto() > ) {
                 this.personajes.get(0).reset(lastCheckPoint);
             }
-            */
+                 */
+            }
+        } catch (Exception e) {
             
         }
 
@@ -124,7 +130,7 @@ public class Partida implements Runnable {
             default:
         }
     }
-    
+
     private void checkIzquierda(int x, int y) {
         String propiedad = this.mapa.getCasilla(x, y).getPropiedad();
         int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
@@ -137,21 +143,28 @@ public class Partida implements Runnable {
             default:
         }
     }
-    
-    public boolean puedeMoverIzquierda(int x, int y){
+
+    public boolean puedeMoverIzquierda(int x, int y) {
         int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
         int xIzquierda = x / anchoCasillas;
         int ySuelo = (y + (int) this.personajes.get(0).getAlto() + 1) / anchoCasillas;
-        
+
         return (this.mapa.getCasilla(xIzquierda, ySuelo).getPropiedad() != "intransitable");
-                    
+    }
+    
+    public boolean puedeMoverDerecha(int x, int y) {
+        int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
+        int xIzquierda = x / anchoCasillas;
+        int ySuelo = (y + (int) this.personajes.get(0).getAlto() + 1) / anchoCasillas;
+
+        return (this.mapa.getCasilla(xIzquierda, ySuelo).getPropiedad() != "intransitable");
     }
 
     private void checkSuelo(int x, int y) {
         String propiedad = this.mapa.getCasilla(x, y).getPropiedad();
         int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
         switch (propiedad) {
-            case "checkpoint":                
+            case "checkpoint":
                 this.lastCheckPoint = new Point();
                 this.lastCheckPoint.x = (x - 1) * anchoCasillas + (anchoCasillas / 2);
                 this.lastCheckPoint.y = (int) this.personajes.get(0).getY();
@@ -161,7 +174,7 @@ public class Partida implements Runnable {
                 break;
             case "sostenedor":
                 this.personajes.get(0).setEstaSobreSuelo(true);
-                this.personajes.get(0).setY((y) * anchoCasillas - (int)this.personajes.get(0).getAlto());
+                this.personajes.get(0).setY((y) * anchoCasillas - (int) this.personajes.get(0).getAlto());
                 break;
             case "eliminatorio":
                 this.personajes.get(0).reset(lastCheckPoint);
