@@ -55,14 +55,6 @@ public class Personaje implements Runnable {
                     velY += this.partida.getGravedad();
                     //max vel
                 }
-                /*
-                if (y >= 420) {
-                    estaSobreSuelo = true;
-                    y = 420;
-                } else {
-                    estaSobreSuelo = false;
-                }
-                 */
 
                 Thread.sleep(timeAc);
             } catch (InterruptedException ex) {
@@ -173,7 +165,13 @@ public class Personaje implements Runnable {
 
     public void pintar(Graphics g) {
         moverPersonaje();
-        String imgPath = "img/personaje/pj" + lastDirection + ".png";
+        String imgPath;
+        if (isJumping()) {
+            imgPath = "img/personaje/pjJumping.png";
+        } else {
+            imgPath = "img/personaje/pj" + lastDirection + ".png";
+        }
+
         BufferedImage img = null;
         try {
             img = ImageIO.read(new File(imgPath));
@@ -186,8 +184,10 @@ public class Personaje implements Runnable {
     }
 
     public void moverIzquerda() {
-        if (x >= 5) {
-            this.x = x - 3;
+        if (partida.puedeMoverIzquierda((int) x, (int) y)) {
+            if (x >= 5) {
+                this.x = x - 3;
+            }
         }
     }
 
@@ -197,7 +197,7 @@ public class Personaje implements Runnable {
 
     public void saltar() {
         if (!jumping && !falling) {
-            velY = - 20;
+            velY = - 11;
             this.y = y + velY;
             jumping = true;
         }
