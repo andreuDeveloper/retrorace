@@ -40,7 +40,7 @@ public class Personaje implements Runnable {
     private int timeAc = 30;
 
     public Personaje(Partida partida) {
-        this.x = 3;
+        this.x = 5;
         this.y = 0;
         this.partida = partida;
     }
@@ -185,19 +185,19 @@ public class Personaje implements Runnable {
 
     public void moverIzquerda() {
         if (partida.puedeMoverIzquierda((int) x, (int) y)) {
-            if (x >= 5) {
-                this.x = x - 3;
-            }
+            this.x = x - 3;
         }
     }
 
     public void moverDerecha() {
-        this.x = x + 3;
+        if (partida.puedeMoverDerecha((int) x, (int) y)) {
+            this.x = x + 3;
+        }
     }
 
     public void saltar() {
         if (!jumping && !falling) {
-            velY = - 11;
+            velY = - 11.5;
             this.y = y + velY;
             jumping = true;
         }
