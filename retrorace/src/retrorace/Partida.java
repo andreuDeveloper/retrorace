@@ -155,10 +155,11 @@ public class Partida implements Runnable {
 
         int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
         int xIzquierda = x / anchoCasillas;
+        int xCentral = (x + (int) this.personajes.get(0).getAncho() / 2) / anchoCasillas;
         int yPies = (y + (int) this.personajes.get(0).getAlto() - 1) / anchoCasillas;
         int ySuelo = (y + (int) this.personajes.get(0).getAlto() + 10) / anchoCasillas;
         String propiedadPies = this.mapa.getCasilla(xIzquierda, yPies).getPropiedad();
-        String propiedadSuelo = this.mapa.getCasilla(xIzquierda, ySuelo).getPropiedad();
+        String propiedadSuelo = this.mapa.getCasilla(xCentral, ySuelo).getPropiedad();
 
         return !(("intransitable".equals(propiedadPies) || "sostenedor".equals(propiedadPies))
                 && !"transitable".equals(propiedadSuelo));
@@ -170,10 +171,11 @@ public class Partida implements Runnable {
         try {
             int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
             int xDerecha = (x + (int) this.personajes.get(0).getAncho() + 1) / anchoCasillas;
+            int xCentral = (x + (int) this.personajes.get(0).getAncho() / 2) / anchoCasillas;
             int yPies = (y + (int) this.personajes.get(0).getAlto() - 1) / anchoCasillas;
             int ySuelo = (y + (int) this.personajes.get(0).getAlto() + 10) / anchoCasillas;
             String propiedadPies = this.mapa.getCasilla(xDerecha, yPies).getPropiedad();
-            String propiedadSuelo = this.mapa.getCasilla(xDerecha, ySuelo).getPropiedad();
+            String propiedadSuelo = this.mapa.getCasilla(xCentral, ySuelo).getPropiedad();
 
             return !(("intransitable".equals(propiedadPies) || "sostenedor".equals(propiedadPies))
                     && !"transitable".equals(propiedadSuelo));
