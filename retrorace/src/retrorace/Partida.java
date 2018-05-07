@@ -18,6 +18,7 @@ public class Partida implements Runnable {
 
     private ArrayList<Personaje> personajes; //Por defecto 0 es el nuestro
     private boolean activa;
+    private boolean enMeta;
     private final double gravedad = 1;
     private Mapa mapa;
     private Point lastCheckPoint = null;
@@ -25,6 +26,7 @@ public class Partida implements Runnable {
     public Partida(Mapa mapa) {
         this.personajes = new ArrayList<Personaje>();
         this.activa = false;
+        this.enMeta = false;
         this.personajes.add(new Personaje(this));
         this.mapa = mapa;
     }
@@ -158,27 +160,31 @@ public class Partida implements Runnable {
         int xCentral = (x + (int) this.personajes.get(0).getAncho() / 2) / anchoCasillas;
         int yPies = (y + (int) this.personajes.get(0).getAlto() - 1) / anchoCasillas;
         int ySuelo = (y + (int) this.personajes.get(0).getAlto() + 10) / anchoCasillas;
-        String propiedadPies = this.mapa.getCasilla(xIzquierda, yPies).getPropiedad();
-        String propiedadSuelo = this.mapa.getCasilla(xCentral, ySuelo).getPropiedad();
+        int yCentral = (y + (int) this.personajes.get(0).getAlto() / 2) / anchoCasillas;
+        String propiedadPiesIzq = this.mapa.getCasilla(xIzquierda, yPies).getPropiedad();
+        String propiedadPechoIzq = this.mapa.getCasilla(xIzquierda, yCentral).getPropiedad();
 
-        return !(("intransitable".equals(propiedadPies) || "sostenedor".equals(propiedadPies))
-                && !"transitable".equals(propiedadSuelo));
+        return (!(propiedadPiesIzq.equals("intransitable") || propiedadPiesIzq.equals("sostenedor"))
+                    || !(propiedadPechoIzq.equals("intransitable") || propiedadPechoIzq.equals("sostenedor")));
     }
 
     public boolean puedeMoverDerecha(int x, int y) {
 
-        //if (x >= 1915) return false;
+        if (x >= 1875) return false;
         try {
             int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
             int xDerecha = (x + (int) this.personajes.get(0).getAncho() + 1) / anchoCasillas;
             int xCentral = (x + (int) this.personajes.get(0).getAncho() / 2) / anchoCasillas;
             int yPies = (y + (int) this.personajes.get(0).getAlto() - 1) / anchoCasillas;
+            int yCentral = (y + (int) this.personajes.get(0).getAlto() / 2) / anchoCasillas;
             int ySuelo = (y + (int) this.personajes.get(0).getAlto() + 10) / anchoCasillas;
-            String propiedadPies = this.mapa.getCasilla(xDerecha, yPies).getPropiedad();
-            String propiedadSuelo = this.mapa.getCasilla(xCentral, ySuelo).getPropiedad();
+            
+            String propiedadPiesDer = this.mapa.getCasilla(xDerecha, yPies).getPropiedad();
+            String propiedadPechoDer = this.mapa.getCasilla(xDerecha, yCentral).getPropiedad();
 
-            return !(("intransitable".equals(propiedadPies) || "sostenedor".equals(propiedadPies))
-                    && !"transitable".equals(propiedadSuelo));
+            return (!(propiedadPiesDer.equals("intransitable") || propiedadPiesDer.equals("sostenedor"))
+                    || !(propiedadPechoDer.equals("intransitable") || propiedadPechoDer.equals("sostenedor")));
+            
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
@@ -218,6 +224,9 @@ public class Partida implements Runnable {
                 this.lastCheckPoint = new Point();
                 this.lastCheckPoint.x = (x - 1) * anchoCasillas + (anchoCasillas / 2);
                 this.lastCheckPoint.y = (int) this.personajes.get(0).getY();
+                break;
+            case "finalizable":
+                this.personajes.get(0).setEnMeta(true);
                 break;
         }
     }
