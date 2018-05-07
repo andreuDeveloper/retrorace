@@ -35,18 +35,26 @@ public class Personaje implements Runnable {
     private boolean movingLeft = false;
     private boolean movingRight = false;
     private boolean estaSobreSuelo = false;
+    private boolean estaMoviendo = true;
     private String lastDirection = "Right";
     private Partida partida;
     private int timeAc = 30;
+    private boolean enMeta;
+    private Animacion animacion;
 
     public Personaje(Partida partida) {
         this.x = 5;
         this.y = 0;
         this.partida = partida;
+        this.enMeta = false;
+        this.estaMoviendo = false;
+        this.animacion = new Animacion();
     }
 
     @Override
     public void run() {
+        new Thread(this.animacion).start();
+        
         while (partida.isActiva()) {
             try {
                 x += velX;
@@ -54,6 +62,10 @@ public class Personaje implements Runnable {
                 if (falling || jumping) {
                     velY += this.partida.getGravedad();
                     //max vel
+                }
+
+                if (enMeta) {
+                    saltar();
                 }
 
                 Thread.sleep(timeAc);
@@ -132,7 +144,8 @@ public class Personaje implements Runnable {
     }
 
     public void setMovingLeft(boolean movingLeft) {
-        this.movingLeft = movingLeft;
+        if (!movingLeft) this.animacion.restartContador();
+        this.movingLeft = estaMoviendo = movingLeft;
     }
 
     public boolean isMovingRight() {
@@ -140,7 +153,8 @@ public class Personaje implements Runnable {
     }
 
     public void setMovingRight(boolean movingRight) {
-        this.movingRight = movingRight;
+        if (!movingRight) this.animacion.restartContador();
+        this.movingRight = estaMoviendo = movingRight;
     }
 
     public double getAncho() {
@@ -149,6 +163,14 @@ public class Personaje implements Runnable {
 
     public double getAlto() {
         return alto;
+    }
+
+    public boolean isEnMeta() {
+        return enMeta;
+    }
+
+    public void setEnMeta(boolean enMeta) {
+        this.enMeta = enMeta;
     }
 
     private void moverPersonaje() {
@@ -167,10 +189,14 @@ public class Personaje implements Runnable {
         moverPersonaje();
         String imgPath;
         if (isJumping()) {
-            imgPath = "img/personaje/pjJumping.png";
+            imgPath = "img/personaje30/pjJumping.png";
+        } else if (estaMoviendo) {
+            imgPath = "img/personaje30/pj" + lastDirection + "" +this.animacion.getContador()%6+ ".png";
         } else {
-            imgPath = "img/personaje/pj" + lastDirection + ".png";
+            imgPath = "img/personaje30/pj" + lastDirection + "0.png";
         }
+        
+        //System.out.println(imgPath);
 
         BufferedImage img = null;
         try {
@@ -178,41 +204,45 @@ public class Personaje implements Runnable {
             this.alto = img.getHeight();
             this.ancho = img.getWidth();
         } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
         g.drawImage(img, (int) x, (int) y, null);
         //g.drawImage(img, 0, (int) y, null);
     }
 
     public void moverIzquerda() {
-        if (partida.puedeMoverIzquierda((int) x, (int) y)) {
+        if (!enMeta && partida.puedeMoverIzquierda((int) x, (int) y)) {
             this.x = x - 3;
         }
     }
 
     public void moverDerecha() {
-        if (partida.puedeMoverDerecha((int) x, (int) y)) {
+        if (!enMeta && partida.puedeMoverDerecha((int) x, (int) y)) {
             this.x = x + 3;
         }
     }
 
     public void saltar() {
         if (!jumping && !falling) {
-            velY = - 11.5;
+            velY = -11.5;
             this.y = y + velY;
             jumping = true;
         }
     }
 
     public void reset(Point lastCheck) {
-        this.estaSobreSuelo = false;
-        this.velY = 0;
-        this.velX = 0;
-        if (lastCheck != null) {
-            this.x = lastCheck.x;
-            this.y = lastCheck.y;
-        } else {
-            this.x = 0;
-            this.y = 0;
+        if (!enMeta) {
+            this.estaSobreSuelo = false;
+            this.estaMoviendo = false;
+            this.velY = 0;
+            this.velX = 0;
+            if (lastCheck != null) {
+                this.x = lastCheck.x;
+                this.y = lastCheck.y;
+            } else {
+                this.x = 0;
+                this.y = 0;
+            }
         }
     }
 
