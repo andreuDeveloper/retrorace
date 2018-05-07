@@ -64,7 +64,6 @@ public class Mapa {
 //        }
 //        paint(g);
 //    }
-
     /**
      * Devuelve la casilla en relación a las coordenadas proporcionadas
      *
@@ -74,9 +73,13 @@ public class Mapa {
      */
     public Casilla getCasilla(int x, int y) {
         try {
-            if ((this.distribucion.length - 1) < y) {
+            if (((this.distribucion.length - 1) < y) && ((this.distribucion[0].length - 1) < x)) {
+                return this.casillas.get(this.distribucion[this.distribucion.length - 1][this.distribucion[0].length - 1]);
+            } else if ((this.distribucion.length - 1) < y) {
                 return this.casillas.get(this.distribucion[this.distribucion.length - 1][x]);
-            } else {
+            } else if((this.distribucion[0].length - 1) < x) {
+                return this.casillas.get(this.distribucion[y][this.distribucion[0].length - 1]);
+            }else  {
                 return this.casillas.get(this.distribucion[y][x]);
             }
         } catch (Exception e) {
@@ -99,16 +102,15 @@ public class Mapa {
         Toolkit.getDefaultToolkit().sync();
     }
 
-    public void activarAntorcha (int x, int y){
-        if(this.distribucion[y][x]==4){
-            this.distribucion[y][x]=9;
+    public void activarAntorcha(int x, int y) {
+        if (this.distribucion[y][x] == 4) {
+            this.distribucion[y][x] = 9;
         }
     }
 
-    
     /*
     Carga todos los tipos de casillas.
-    */
+     */
     public void cargarCasillas() throws FileNotFoundException {
         Gson gson = new Gson();
         this.casillas = gson.fromJson(new FileReader("data/casillas.json"), new TypeToken<List<Casilla>>() {
@@ -137,6 +139,5 @@ public class Mapa {
     public Image getImage() {
         return image;
     }
-
 
 }
