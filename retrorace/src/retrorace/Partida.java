@@ -21,6 +21,7 @@ public class Partida implements Runnable {
     private boolean enMeta;
     private final double gravedad = 1;
     private Mapa mapa;
+    private Timer tiempo;
     private Point lastCheckPoint = null;
 
     public Partida(Mapa mapa) {
@@ -29,6 +30,7 @@ public class Partida implements Runnable {
         this.enMeta = false;
         this.personajes.add(new Personaje(this));
         this.mapa = mapa;
+        this.tiempo = new Timer(1000); //1 sec
     }
 
     private void iniciarPartida() {
@@ -36,6 +38,7 @@ public class Partida implements Runnable {
         for (int i = 0; i < this.personajes.size(); i++) {
             new Thread(this.personajes.get(i)).start();
         }
+        new Thread(this.tiempo).start();
     }
 
     @Override
@@ -44,13 +47,17 @@ public class Partida implements Runnable {
         while (activa) {
             //Check position %xcasilla
             checkPosition(this.personajes.get(0).getCoordenadas());
-
             try {
                 Thread.sleep(5);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        this.tiempo.end();
+    }
+
+    public int getTiempoPartida() {
+        return this.tiempo.getContador();
     }
 
     public Mapa getMapa() {
@@ -128,7 +135,7 @@ public class Partida implements Runnable {
                 this.mapa.activarAntorcha(x, y);
                 int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
                 this.lastCheckPoint = new Point();
-                this.lastCheckPoint.x = (x - 1) * anchoCasillas + (anchoCasillas / 2);
+                this.lastCheckPoint.x = (x) * anchoCasillas;
                 this.lastCheckPoint.y = (int) this.personajes.get(0).getY();
                 break;
             default:
@@ -142,7 +149,7 @@ public class Partida implements Runnable {
             case "checkpointOff":
                 this.mapa.activarAntorcha(x, y);
                 this.lastCheckPoint = new Point();
-                this.lastCheckPoint.x = (x - 1) * anchoCasillas + (anchoCasillas / 2);
+                this.lastCheckPoint.x = (x) * anchoCasillas;
                 this.lastCheckPoint.y = (int) this.personajes.get(0).getY();
                 break;
             default:
@@ -164,13 +171,14 @@ public class Partida implements Runnable {
         String propiedadPiesIzq = this.mapa.getCasilla(xIzquierda, yPies).getPropiedad();
         String propiedadPechoIzq = this.mapa.getCasilla(xIzquierda, yCentral).getPropiedad();
 
-        return (!(propiedadPiesIzq.equals("intransitable") || propiedadPiesIzq.equals("sostenedor"))
-                    || !(propiedadPechoIzq.equals("intransitable") || propiedadPechoIzq.equals("sostenedor")));
+        return (!(propiedadPiesIzq.equals("intransitable") || propiedadPiesIzq.equals("sostenedor")));
     }
 
     public boolean puedeMoverDerecha(int x, int y) {
 
-        if (x >= 1875) return false;
+        if (x >= 1875) {
+            return false;
+        }
         try {
             int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
             int xDerecha = (x + (int) this.personajes.get(0).getAncho() + 1) / anchoCasillas;
@@ -178,13 +186,12 @@ public class Partida implements Runnable {
             int yPies = (y + (int) this.personajes.get(0).getAlto() - 1) / anchoCasillas;
             int yCentral = (y + (int) this.personajes.get(0).getAlto() / 2) / anchoCasillas;
             int ySuelo = (y + (int) this.personajes.get(0).getAlto() + 10) / anchoCasillas;
-            
+
             String propiedadPiesDer = this.mapa.getCasilla(xDerecha, yPies).getPropiedad();
             String propiedadPechoDer = this.mapa.getCasilla(xDerecha, yCentral).getPropiedad();
 
-            return (!(propiedadPiesDer.equals("intransitable") || propiedadPiesDer.equals("sostenedor"))
-                    || !(propiedadPechoDer.equals("intransitable") || propiedadPechoDer.equals("sostenedor")));
-            
+            return (!(propiedadPiesDer.equals("intransitable") || propiedadPiesDer.equals("sostenedor")));
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
@@ -199,7 +206,7 @@ public class Partida implements Runnable {
             case "checkpointOff":
                 this.mapa.activarAntorcha(x, y);
                 this.lastCheckPoint = new Point();
-                this.lastCheckPoint.x = (x - 1) * anchoCasillas + (anchoCasillas / 2);
+                this.lastCheckPoint.x = (x) * anchoCasillas;
                 this.lastCheckPoint.y = (int) this.personajes.get(0).getY();
             case "transitable":
                 this.personajes.get(0).setFalling(true);
@@ -210,7 +217,8 @@ public class Partida implements Runnable {
                 this.personajes.get(0).setY((y) * anchoCasillas - (int) this.personajes.get(0).getAlto());
                 break;
             case "eliminatorio":
-                this.personajes.get(0).reset(lastCheckPoint);
+                this.personajes.get(0).matar();
+                break;
             default:
         }
     }
@@ -222,12 +230,22 @@ public class Partida implements Runnable {
             case "checkpointOff":
                 this.mapa.activarAntorcha(x, y);
                 this.lastCheckPoint = new Point();
-                this.lastCheckPoint.x = (x - 1) * anchoCasillas + (anchoCasillas / 2);
+                this.lastCheckPoint.x = (x) * anchoCasillas;
                 this.lastCheckPoint.y = (int) this.personajes.get(0).getY();
                 break;
             case "finalizable":
                 this.personajes.get(0).setEnMeta(true);
+                this.tiempo.pausar();
                 break;
+            case "trampolin":
+                this.personajes.get(0).saltar(20);
+                break;
+        }
+
+        if (propiedad.equals("agua")) {
+            this.personajes.get(0).setBuffMovimiento(-1);
+        } else {
+            this.personajes.get(0).setBuffMovimiento(0);
         }
     }
 
