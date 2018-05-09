@@ -39,6 +39,7 @@ public class Personaje implements Runnable {
     private boolean movingRight = false;
     private boolean estaSobreSuelo = false;
     private boolean estaMoviendo = true;
+    private Point lastCheckPoint;
     private String lastDirection = "Right";
     private Partida partida;
     private int timeRefresh = 30;
@@ -59,7 +60,7 @@ public class Personaje implements Runnable {
         this.estaMoviendo = false;
         this.animacion = new Timer(40);
         this.color = "White";
-
+        this.lastCheckPoint = null;
         initImagenes();
     }
 
@@ -186,6 +187,10 @@ public class Personaje implements Runnable {
     public boolean isEnMeta() {
         return enMeta;
     }
+    
+    public void setLastCheckPoint(int x, int y) {
+        this.lastCheckPoint = new Point(x, y);
+    }
 
     public void setEnMeta(boolean enMeta) {
         this.enMeta = enMeta;
@@ -193,6 +198,10 @@ public class Personaje implements Runnable {
 
     public double getBuffMovimiento() {
         return buffMovimiento;
+    }
+    
+    public boolean isMuerto() {
+        return muerto;
     }
 
     public void setBuffMovimiento(double buffMovimiento) {
@@ -203,6 +212,13 @@ public class Personaje implements Runnable {
         return fuerzaSalto;
     }
 
+    public void setColor(String color) {
+        this.color = color;
+        initImagenes();
+    }
+
+    
+    
     public Point getCoordenadas() {
         return new Point((int) x, (int) y);
     }
@@ -251,20 +267,20 @@ public class Personaje implements Runnable {
     }
 
     public void moverIzquerda() {
-        if (!enMeta && partida.puedeMoverIzquierda((int) x, (int) y)) {
+        if (!enMeta && partida.puedeMoverIzquierda(this)) {
             this.x = x - velX + buffMovimiento;
         }
     }
 
     public void moverDerecha() {
-        if (!enMeta && partida.puedeMoverDerecha((int) x, (int) y)) {
-            this.x = x + velX + buffMovimiento;
+        if (!enMeta && partida.puedeMoverDerecha(this)) {
+            this.x = x + velX - buffMovimiento;
         }
     }
 
     public void saltar(double fuerza) {
         if (!jumping && !falling) {
-            velY = -11.5;
+            velY = - fuerza;
             this.y = y + velY;
             jumping = true;
         }
@@ -275,25 +291,25 @@ public class Personaje implements Runnable {
         this.estaSobreSuelo = true;
         this.velY = 0;
         try {
-            Thread.sleep(1200);
-            reset(this.partida.getLastCheckPoint());
+            Thread.sleep(100);
+            reset();
         } catch (InterruptedException ex) {
             Logger.getLogger(Personaje.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void reset(Point lastCheck) {
+    public void reset() {
         if (!enMeta) {
             this.estaSobreSuelo = false;
             this.estaMoviendo = false;
             this.muerto = false;
             this.velY = 0;
             this.velX = 3;
-            if (lastCheck != null) {
-                this.x = lastCheck.x;
-                this.y = lastCheck.y;
+            if (lastCheckPoint != null) {
+                this.x = lastCheckPoint.x;
+                this.y = lastCheckPoint.y;
             } else {
-                this.x = 0;
+                this.x = 5;
                 this.y = 0;
             }
         }
@@ -313,6 +329,7 @@ public class Personaje implements Runnable {
             imgSaltar = ImageIO.read(new File("img/personaje30/pjJumping" + color + ".png"));
             //Muerto
             imgMuerto = ImageIO.read(new File("img/personaje30/pjDying" + color + ".png"));
+            
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
