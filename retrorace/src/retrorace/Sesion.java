@@ -56,6 +56,8 @@ public class Sesion {
     
     public Partida initPartida(int numMap){
         partida = new Partida(mapas.get(numMap));
+        partida.addPersonaje();
+        partida.setTipoPartida("Duo");
         new Thread(partida).start();
         return partida;
     }

@@ -29,38 +29,65 @@ public class Personaje implements Runnable {
 
     private double x, y;
     private double ancho, alto;
-    private double velX = 0, velY = 0;
+    private double velX = 3, velY = 0;
+    private double buffMovimiento = 0;
     private boolean falling = true;
     private boolean jumping = false;
+    private boolean muerto = false;
+    private final double fuerzaSalto = 11.5;
     private boolean movingLeft = false;
     private boolean movingRight = false;
     private boolean estaSobreSuelo = false;
+    private boolean estaMoviendo = true;
+    private Point lastCheckPoint;
     private String lastDirection = "Right";
     private Partida partida;
-    private int timeAc = 30;
+    private int timeRefresh = 30;
+    private boolean enMeta;
+    private Timer animacion;
+    private String color;
+
+    private BufferedImage imgTransicionRight[];
+    private BufferedImage imgTransicionLeft[];
+    private BufferedImage imgSaltar;
+    private BufferedImage imgMuerto;
 
     public Personaje(Partida partida) {
-        this.x = 3;
+        this.x = 5;
         this.y = 0;
         this.partida = partida;
+        this.enMeta = false;
+        this.estaMoviendo = false;
+        this.animacion = new Timer(40);
+        this.color = "White";
+        this.lastCheckPoint = null;
+        initImagenes();
     }
 
     @Override
     public void run() {
+        new Thread(this.animacion).start();
+
         while (partida.isActiva()) {
             try {
-                x += velX;
-                y += velY;
+                if (!muerto) {
+                    y += velY;
+                }
                 if (falling || jumping) {
                     velY += this.partida.getGravedad();
                     //max vel
                 }
 
-                Thread.sleep(timeAc);
+                if (enMeta) {
+                    saltar(this.fuerzaSalto);
+                }
+
+                Thread.sleep(timeRefresh);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Personaje.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        this.animacion.end();
     }
 
     public double getX() {
@@ -132,7 +159,10 @@ public class Personaje implements Runnable {
     }
 
     public void setMovingLeft(boolean movingLeft) {
-        this.movingLeft = movingLeft;
+        if (!movingLeft) {
+            this.animacion.restartContador();
+        }
+        this.movingLeft = estaMoviendo = movingLeft;
     }
 
     public boolean isMovingRight() {
@@ -140,7 +170,10 @@ public class Personaje implements Runnable {
     }
 
     public void setMovingRight(boolean movingRight) {
-        this.movingRight = movingRight;
+        if (!movingRight) {
+            this.animacion.restartContador();
+        }
+        this.movingRight = estaMoviendo = movingRight;
     }
 
     public double getAncho() {
@@ -151,73 +184,157 @@ public class Personaje implements Runnable {
         return alto;
     }
 
+    public boolean isEnMeta() {
+        return enMeta;
+    }
+    
+    public void setLastCheckPoint(int x, int y) {
+        this.lastCheckPoint = new Point(x, y);
+    }
+
+    public void setEnMeta(boolean enMeta) {
+        this.enMeta = enMeta;
+    }
+
+    public double getBuffMovimiento() {
+        return buffMovimiento;
+    }
+    
+    public boolean isMuerto() {
+        return muerto;
+    }
+
+    public void setBuffMovimiento(double buffMovimiento) {
+        this.buffMovimiento = buffMovimiento;
+    }
+
+    public double getFuerzaSalto() {
+        return fuerzaSalto;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+        initImagenes();
+    }
+
+    
+    
+    public Point getCoordenadas() {
+        return new Point((int) x, (int) y);
+    }
+
     private void moverPersonaje() {
-        if (this.movingLeft) {
-            lastDirection = "Left";
-            moverIzquerda();
-        }
-        if (this.movingRight) {
-            lastDirection = "Right";
-            moverDerecha();
+        if (!muerto) {
+            if (this.movingLeft) {
+                lastDirection = "Left";
+                moverIzquerda();
+            }
+            if (this.movingRight) {
+                lastDirection = "Right";
+                moverDerecha();
+            }
         }
         //if (this.jumping) saltar();
     }
 
     public void pintar(Graphics g) {
         moverPersonaje();
-        String imgPath;
-        if (isJumping()) {
-            imgPath = "img/personaje/pjJumping.png";
-        } else {
-            imgPath = "img/personaje/pj" + lastDirection + ".png";
+        BufferedImage img = imgTransicionRight[0];
+
+        if (muerto) {
+            img = imgMuerto;
+        } else if (jumping) {
+            img = imgSaltar;
+        } else if (estaMoviendo) {
+            if (lastDirection.equals("Left")) {
+                img = imgTransicionLeft[this.animacion.getContador() % imgTransicionLeft.length];
+            } else {
+                img = imgTransicionRight[this.animacion.getContador() % imgTransicionRight.length];
+            }
+        } else { //Parado
+            if (lastDirection.equals("Left")) {
+                img = imgTransicionLeft[0];
+            } else {
+                img = imgTransicionRight[0];
+            }
         }
 
-        BufferedImage img = null;
-        try {
-            img = ImageIO.read(new File(imgPath));
-            this.alto = img.getHeight();
-            this.ancho = img.getWidth();
-        } catch (IOException e) {
-        }
+        this.alto = img.getHeight();
+        this.ancho = img.getWidth();
+
         g.drawImage(img, (int) x, (int) y, null);
         //g.drawImage(img, 0, (int) y, null);
     }
 
     public void moverIzquerda() {
-        if (partida.puedeMoverIzquierda((int) x, (int) y)) {
-            if (x >= 5) {
-                this.x = x - 3;
-            }
+        if (!enMeta && partida.puedeMoverIzquierda(this)) {
+            this.x = x - velX + buffMovimiento;
         }
     }
 
     public void moverDerecha() {
-        this.x = x + 3;
+        if (!enMeta && partida.puedeMoverDerecha(this)) {
+            this.x = x + velX - buffMovimiento;
+        }
     }
 
-    public void saltar() {
+    public void saltar(double fuerza) {
         if (!jumping && !falling) {
-            velY = - 11;
+            velY = - fuerza;
             this.y = y + velY;
             jumping = true;
         }
     }
 
-    public void reset(Point lastCheck) {
-        this.estaSobreSuelo = false;
+    public void matar() {
+        this.muerto = true;
+        this.estaSobreSuelo = true;
         this.velY = 0;
-        this.velX = 0;
-        if (lastCheck != null) {
-            this.x = lastCheck.x;
-            this.y = lastCheck.y;
-        } else {
-            this.x = 0;
-            this.y = 0;
+        try {
+            Thread.sleep(100);
+            reset();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Personaje.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public Point getCoordenadas() {
-        return new Point((int) x, (int) y);
+    public void reset() {
+        if (!enMeta) {
+            this.estaSobreSuelo = false;
+            this.estaMoviendo = false;
+            this.muerto = false;
+            this.velY = 0;
+            this.velX = 3;
+            if (lastCheckPoint != null) {
+                this.x = lastCheckPoint.x;
+                this.y = lastCheckPoint.y;
+            } else {
+                this.x = 5;
+                this.y = 0;
+            }
+        }
+    }
+
+    private void initImagenes() {
+        try {
+            //Imagenes caminar
+            this.imgTransicionRight = new BufferedImage[6];
+            this.imgTransicionLeft = new BufferedImage[6];
+
+            for (int i = 0; i < this.imgTransicionRight.length; i++) {
+                imgTransicionRight[i] = ImageIO.read(new File("img/personaje30/pjRight" + i + color + ".png"));
+                imgTransicionLeft[i] = ImageIO.read(new File("img/personaje30/pjLeft" + i + color + ".png"));
+            }
+            //Salto
+            imgSaltar = ImageIO.read(new File("img/personaje30/pjJumping" + color + ".png"));
+            //Muerto
+            imgMuerto = ImageIO.read(new File("img/personaje30/pjDying" + color + ".png"));
+            
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        System.out.println("REAED ALL SUCCESSFULLY");
     }
 
 }
