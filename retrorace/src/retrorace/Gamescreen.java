@@ -140,16 +140,18 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
                 break;
             default:    //Other keys
         }
-        
+
         //FOR DUO LOCAL
-        switch (key) {
-            case 65:    //A
-                this.partida.getPersonaje(1).setMovingLeft(false);
-                break;
-            case 68:    //D
-                this.partida.getPersonaje(1).setMovingRight(false);
-                break;
-            default:    //Other keys
+        if (this.partida.getTipoPartida().equals("Duo")) {
+            switch (key) {
+                case 65:    //A
+                    this.partida.getPersonaje(1).setMovingLeft(false);
+                    break;
+                case 68:    //D
+                    this.partida.getPersonaje(1).setMovingRight(false);
+                    break;
+                default:    //Other keys
+            }
         }
     }
 }

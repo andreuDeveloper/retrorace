@@ -63,11 +63,13 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
     /*Menu panel*/
     private JButton btnSinglePlayer;
+    private JButton btnDuoPlayer;
     private JButton btnMultiPlayer;
     private JButton btnRanking;
 
     /*Choice Map panel*/
     private ArrayList<JButton> btnMap;
+    private String tipoPartida;
 
     //ranking
     /*CONSTRUCTOR*/
@@ -330,8 +332,11 @@ c.ipady=15;
 
         btnSinglePlayer = new JButton("Un jugador");
         btnSinglePlayer.addActionListener(this);
+        
+        btnDuoPlayer = new JButton("Dos jugadores");
+        btnDuoPlayer.addActionListener(this);
 
-        btnMultiPlayer = new JButton("Multijugador");
+        btnMultiPlayer = new JButton("Multijugador online");
         btnMultiPlayer.addActionListener(this);
         btnMultiPlayer.setEnabled(false);
 
@@ -339,8 +344,9 @@ c.ipady=15;
         btnRanking.addActionListener(this);
         btnRanking.setEnabled(false);
 
-        JPanel panelAuxMenu = new JPanel(new GridLayout(3, 1, 5, 15));
+        JPanel panelAuxMenu = new JPanel(new GridLayout(4, 1, 5, 15));
         panelAuxMenu.add(btnSinglePlayer);
+        panelAuxMenu.add(btnDuoPlayer);
         panelAuxMenu.add(btnMultiPlayer);
         panelAuxMenu.add(btnRanking);
 
@@ -367,7 +373,7 @@ c.ipady=15;
         }
     }
 
-    private void initSinglePlayer() {
+    private void initMapChoice() {
         panelMenu.setVisible(false);
         btnBack.setVisible(true);
         if (panelMapChoice == null) {
@@ -381,13 +387,13 @@ c.ipady=15;
     private void initPartida(int numMap) {
         panelMapChoice.setVisible(false);
         if (panelGamescreen == null) {
-            gamescreen = new Gamescreen(this,sesion.initPartida(numMap));
+            gamescreen = new Gamescreen(this,sesion.initPartida(numMap,tipoPartida));
             this.getContentPane().add(createComponentGamescreen(), BorderLayout.CENTER);
             gamescreen.setSize(getWidth(), getHeight() - btnExit.getHeight() - 2 * btnExit.getY());
 //            gamescreen.setSize(1280, 700);
         } else {
             panelGamescreen.setVisible(true);
-            gamescreen.setPartida(sesion.initPartida(numMap));
+            gamescreen.setPartida(sesion.initPartida(numMap,tipoPartida));
         }
 
         new Thread(this.gamescreen).start();
@@ -424,7 +430,11 @@ c.ipady=15;
             //Acciones panel menu
         } else if (panelMenu.isVisible()) {
             if (btnAux == btnSinglePlayer) {
-                initSinglePlayer();
+                initMapChoice();
+                tipoPartida="Single";
+            }else if (btnAux == btnDuoPlayer){
+                initMapChoice();
+                tipoPartida="Duo";
             }
         } else if (panelMapChoice.isVisible()) {
             if (btnAux == btnBack) {
