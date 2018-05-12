@@ -22,7 +22,7 @@ public class Partida implements Runnable {
     private final double gravedad = 1;
     private Mapa mapa;
     private Timer tiempo;
-    private final String colores [] =  {"White", "Blue" , "White", "White"};
+    private final String colores[] = {"Blue", "Green", "White", "White"};
 
     public Partida(Mapa mapa) {
         this.personajes = new ArrayList<Personaje>();
@@ -35,7 +35,7 @@ public class Partida implements Runnable {
     private void iniciarPartida() {
         this.activa = true;
         for (int i = 0; i < this.personajes.size(); i++) {
-            //this.personajes.get(i).setColor(colores[i]);
+            this.personajes.get(i).setColor(colores[i]);
             new Thread(this.personajes.get(i)).start();
             //this.personajes.get(i).start();
         }
@@ -52,7 +52,7 @@ public class Partida implements Runnable {
                 if (!personaje.isMuerto()) {
                     checkPosition(personaje);
                 }
-                
+
                 //}
             }
             try {
@@ -137,13 +137,22 @@ public class Partida implements Runnable {
 
     private void checkDerecha(int x, int y, Personaje personaje) {
         String propiedad = this.mapa.getCasilla(x, y).getPropiedad();
+        int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
         switch (propiedad) {
             case "checkpointOff":
                 this.mapa.activarAntorcha(x, y);
-                int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
                 personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
                 break;
+            case "checkpointOn":
+                if (this.tipoPartida.equals("Duo")) {
+                    personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                }
+                break;
             default:
+        }
+
+        if (this.tipoPartida.equals("Duo")) {
+
         }
     }
 
@@ -154,6 +163,11 @@ public class Partida implements Runnable {
             case "checkpointOff":
                 this.mapa.activarAntorcha(x, y);
                 personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                break;
+            case "checkpointOn":
+                if (this.tipoPartida.equals("Duo")) {
+                    personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                }
                 break;
             default:
         }
@@ -218,8 +232,13 @@ public class Partida implements Runnable {
                 personaje.setEstaSobreSuelo(true);
                 personaje.setY((y) * anchoCasillas - (int) personaje.getAlto());
                 break;
-            case "eliminatorio":
-                personaje.matar();
+//            case "eliminatorio":
+//                personaje.matar();
+//                break;
+            case "checkpointOn":
+                if (this.tipoPartida.equals("Duo")) {
+                    personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                }
                 break;
             default:
         }
@@ -233,9 +252,23 @@ public class Partida implements Runnable {
                 this.mapa.activarAntorcha(x, y);
                 personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
                 break;
-            case "finalizable":
+            case "checkpointOn":
+                if (this.tipoPartida.equals("Duo")) {
+                    personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                }
+                break;
+            case "finalizableOff":
                 personaje.setEnMeta(true);
+                //this.mapa.activarMeta(x, y);
                 this.tiempo.pausar();
+                break;
+            case "finalizableOn":
+                if (this.tipoPartida.equals("Duo")) {
+                    personaje.setEnMeta(true);
+                }
+
+            case "eliminatorio":
+                personaje.matar();
                 break;
             case "trampolin":
                 personaje.saltar(18);
