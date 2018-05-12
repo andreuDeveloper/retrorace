@@ -29,7 +29,7 @@ public class Personaje implements Runnable {
 
     private double x, y;
     private double ancho, alto;
-    private double velX = 3, velY = 0;
+    private double velX = 5, velY = 0;
     private double buffMovimiento = 0;
     private boolean falling = true;
     private boolean jumping = false;
@@ -70,16 +70,17 @@ public class Personaje implements Runnable {
 
         while (partida.isActiva()) {
             try {
-                if (!muerto) {
-                    y += velY;
-                }
-                if (falling || jumping) {
-                    velY += this.partida.getGravedad();
-                    //max vel
-                }
-
                 if (enMeta) {
                     saltar(this.fuerzaSalto);
+                } else {
+                    moverPersonaje();
+                    if (!muerto) {
+                        y += velY;
+                    }
+                    if (falling || jumping) {
+                        velY += this.partida.getGravedad();
+                        //max vel
+                    }
                 }
 
                 Thread.sleep(timeRefresh);
@@ -187,7 +188,7 @@ public class Personaje implements Runnable {
     public boolean isEnMeta() {
         return enMeta;
     }
-    
+
     public void setLastCheckPoint(int x, int y) {
         this.lastCheckPoint = new Point(x, y);
     }
@@ -201,7 +202,7 @@ public class Personaje implements Runnable {
     public double getBuffMovimiento() {
         return buffMovimiento;
     }
-    
+
     public boolean isMuerto() {
         return muerto;
     }
@@ -219,8 +220,6 @@ public class Personaje implements Runnable {
         initImagenes();
     }
 
-    
-    
     public Point getCoordenadas() {
         return new Point((int) x, (int) y);
     }
@@ -235,12 +234,13 @@ public class Personaje implements Runnable {
                 lastDirection = "Right";
                 moverDerecha();
             }
+            partida.comprobarPies(this);
+            partida.commprobarSuelo(this);
+            
         }
-        //if (this.jumping) saltar();
     }
 
     public void pintar(Graphics g) {
-        moverPersonaje();
         BufferedImage img = imgTransicionRight[0];
 
         if (muerto) {
@@ -265,24 +265,25 @@ public class Personaje implements Runnable {
         this.ancho = img.getWidth();
 
         g.drawImage(img, (int) x, (int) y, null);
-        //g.drawImage(img, 0, (int) y, null);
     }
 
     public void moverIzquerda() {
         if (!enMeta && partida.puedeMoverIzquierda(this)) {
+            partida.comprobarIzquierda(this);
             this.x = x - velX + buffMovimiento;
         }
     }
 
     public void moverDerecha() {
         if (!enMeta && partida.puedeMoverDerecha(this)) {
+            partida.comprobarDerecha(this);
             this.x = x + velX - buffMovimiento;
         }
     }
 
     public void saltar(double fuerza) {
         if (!jumping && !falling) {
-            velY = - fuerza;
+            velY = -fuerza;
             this.y = y + velY;
             jumping = true;
         }
@@ -293,7 +294,7 @@ public class Personaje implements Runnable {
         this.estaSobreSuelo = true;
         this.velY = 0;
         try {
-            Thread.sleep(100);
+            Thread.sleep(1000);
             reset();
         } catch (InterruptedException ex) {
             Logger.getLogger(Personaje.class.getName()).log(Level.SEVERE, null, ex);
@@ -306,7 +307,7 @@ public class Personaje implements Runnable {
             this.estaMoviendo = false;
             this.muerto = false;
             this.velY = 0;
-            this.velX = 3;
+            this.velX = 5;
             if (lastCheckPoint != null) {
                 this.x = lastCheckPoint.x;
                 this.y = lastCheckPoint.y;
@@ -331,7 +332,6 @@ public class Personaje implements Runnable {
             imgSaltar = ImageIO.read(new File("img/personaje30/pjJumping" + color + ".png"));
             //Muerto
             imgMuerto = ImageIO.read(new File("img/personaje30/pjDying" + color + ".png"));
-            
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
