@@ -70,10 +70,10 @@ public class Personaje implements Runnable {
 
         while (partida.isActiva()) {
             try {
+                moverPersonaje();
                 if (enMeta) {
                     saltar(this.fuerzaSalto);
                 } else {
-                    moverPersonaje();
                     if (!muerto) {
                         y += velY;
                     }
@@ -270,14 +270,14 @@ public class Personaje implements Runnable {
     public void moverIzquerda() {
         if (!enMeta && partida.puedeMoverIzquierda(this)) {
             partida.comprobarIzquierda(this);
-            this.x = x - velX + buffMovimiento;
+            this.x = x - velX - buffMovimiento;
         }
     }
 
     public void moverDerecha() {
         if (!enMeta && partida.puedeMoverDerecha(this)) {
             partida.comprobarDerecha(this);
-            this.x = x + velX - buffMovimiento;
+            this.x = x + velX + buffMovimiento;
         }
     }
 

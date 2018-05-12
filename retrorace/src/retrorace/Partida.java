@@ -45,7 +45,7 @@ public class Partida implements Runnable {
     public void run() {
         iniciarPartida();
         while (activa) {
-           
+
             try {
                 Thread.sleep(50);
             } catch (InterruptedException ex) {
@@ -100,7 +100,7 @@ public class Partida implements Runnable {
     public double getGravedad() {
         return gravedad;
     }
-    
+
     public void comprobarDerecha(Personaje personaje) {
         int anchoCasillas = 40;
         int xDerecha = ((int) personaje.getX() + (int) personaje.getAncho() + 1) / anchoCasillas;
@@ -118,16 +118,15 @@ public class Partida implements Runnable {
                 break;
             default:
         }
-        
-    }
 
+    }
 
     public void comprobarIzquierda(Personaje personaje) {
         int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
         int xIzquierda = (int) personaje.getX() / anchoCasillas;
         int ySuelo = ((int) personaje.getY() + (int) personaje.getAlto() + 10) / anchoCasillas;
         String propiedad = this.mapa.getCasilla(xIzquierda, ySuelo).getPropiedad();
-        
+
         switch (propiedad) {
             case "checkpointOff":
                 this.mapa.activarAntorcha(xIzquierda, ySuelo);
@@ -154,7 +153,17 @@ public class Partida implements Runnable {
         int yPies = (y + (int) personaje.getAlto() - 1) / anchoCasillas;
         String propiedadPiesIzq = this.mapa.getCasilla(xIzquierda, yPies).getPropiedad();
 
-        return (!(propiedadPiesIzq.equals("intransitable") || propiedadPiesIzq.equals("sostenedor")));
+        switch (propiedadPiesIzq) {
+                case "intransitable":
+                    return false;
+                case "sostenedor":
+                    return false;
+                case "trampolin":
+                    return false;
+                default:
+                    return true;
+
+            }
     }
 
     public boolean puedeMoverDerecha(Personaje personaje) {
@@ -167,11 +176,21 @@ public class Partida implements Runnable {
             int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
             int xDerecha = (x + (int) personaje.getAncho() + 1) / anchoCasillas;
             int yPies = (y + (int) personaje.getAlto() - 1) / anchoCasillas;
-            int yCentral = (y + (int) personaje.getAlto() / 2) / anchoCasillas;
 
             String propiedadPiesDer = this.mapa.getCasilla(xDerecha, yPies).getPropiedad();
 
-            return (!(propiedadPiesDer.equals("intransitable") || propiedadPiesDer.equals("sostenedor")));
+            switch (propiedadPiesDer) {
+                case "intransitable":
+                    return false;
+                case "sostenedor":
+                    return false;
+                case "trampolin":
+                    return false;
+                default:
+                    return true;
+
+            }
+
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -186,6 +205,7 @@ public class Partida implements Runnable {
         int ySuelo = ((int) personaje.getY() + (int) personaje.getAlto() + 10) / anchoCasillas;
 
         String propiedad = this.mapa.getCasilla(xCentral, ySuelo).getPropiedad();
+        System.out.println(propiedad);
         switch (propiedad) {
             case "checkpointOff":
                 personaje.setLastCheckPoint((xCentral) * anchoCasillas, (int) personaje.getY());
@@ -205,6 +225,12 @@ public class Partida implements Runnable {
                 if (this.tipoPartida.equals("Duo")) {
                     personaje.setLastCheckPoint((xCentral) * anchoCasillas, (int) personaje.getY());
                 }
+                break;
+            case "trampolin":
+                personaje.setEstaSobreSuelo(true);
+                personaje.setJumping(false);
+                personaje.setY((ySuelo) * anchoCasillas - (int) personaje.getAlto());
+                personaje.saltar(15);
                 break;
             default:
         }
@@ -227,7 +253,7 @@ public class Partida implements Runnable {
                 break;
             case "finalizableOff":
                 personaje.setEnMeta(true);
-                this.mapa.activarMeta(x, y);
+                this.mapa.activarMeta(xCentral, yPies);
                 this.tiempo.pausar();
                 break;
             case "finalizableOn":
@@ -238,13 +264,10 @@ public class Partida implements Runnable {
             case "eliminatorio":
                 personaje.matar();
                 break;
-            case "trampolin":
-                personaje.saltar(18);
-                break;
         }
 
         if (propiedad.equals("agua")) {
-            personaje.setBuffMovimiento(-2);
+            personaje.setBuffMovimiento(-3);
         } else {
             personaje.setBuffMovimiento(0);
         }
