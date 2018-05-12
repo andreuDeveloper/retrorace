@@ -37,7 +37,6 @@ public class Partida implements Runnable {
         for (int i = 0; i < this.personajes.size(); i++) {
             this.personajes.get(i).setColor(colores[i]);
             new Thread(this.personajes.get(i)).start();
-            //this.personajes.get(i).start();
         }
         new Thread(this.tiempo).start();
     }
@@ -46,17 +45,9 @@ public class Partida implements Runnable {
     public void run() {
         iniciarPartida();
         while (activa) {
-            //Check position casilla
-            for (Personaje personaje : personajes) {
-                //if (!personaje.esTipoOnline) {
-                if (!personaje.isMuerto()) {
-                    checkPosition(personaje);
-                }
 
-                //}
-            }
             try {
-                Thread.sleep(5);
+                Thread.sleep(50);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -110,63 +101,40 @@ public class Partida implements Runnable {
         return gravedad;
     }
 
-    private void checkPosition(Personaje personaje) {
-        try {
-            //Recoger la casilla donde nos encontramos, y hacer x cosas segun la casilla
-            Casilla aux = this.mapa.getCasilla(0, 0);
-
-            if (aux != null) {
-                int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
-                int xIzquierda = (int) personaje.getX() / anchoCasillas;
-                int xDerecha = ((int) personaje.getX() + (int) personaje.getAncho() + 1) / anchoCasillas;
-                int xCentral = ((int) personaje.getX() + (int) personaje.getAncho() / 2) / anchoCasillas;
-                int yCabeza = (int) personaje.getY() / anchoCasillas;
-                int ySuelo = ((int) personaje.getY() + (int) personaje.getAlto() + 10) / anchoCasillas;
-                int yPies = ((int) personaje.getY() + (int) personaje.getAlto() - 1) / anchoCasillas;
-
-                checkDerecha(xDerecha + 1, ySuelo, personaje);
-                checkIzquierda(xIzquierda + 1, ySuelo, personaje);
-                checkSuelo(xCentral, ySuelo, personaje);
-                checkPies(xCentral, yPies, personaje);
-            }
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    private void checkDerecha(int x, int y, Personaje personaje) {
-        String propiedad = this.mapa.getCasilla(x, y).getPropiedad();
-        int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
+    public void comprobarDerecha(Personaje personaje) {
+        int anchoCasillas = 40;
+        int xDerecha = ((int) personaje.getX() + (int) personaje.getAncho() + 1) / anchoCasillas;
+        int ySuelo = ((int) personaje.getY() + (int) personaje.getAlto() + 10) / anchoCasillas;
+        String propiedad = this.mapa.getCasilla(xDerecha, ySuelo).getPropiedad();
         switch (propiedad) {
             case "checkpointOff":
-                this.mapa.activarAntorcha(x, y);
-                personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                this.mapa.activarAntorcha(xDerecha, ySuelo);
+                personaje.setLastCheckPoint((xDerecha) * anchoCasillas, (int) personaje.getY());
                 break;
             case "checkpointOn":
                 if (this.tipoPartida.equals("Duo")) {
-                    personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                    personaje.setLastCheckPoint((xDerecha) * anchoCasillas, (int) personaje.getY());
                 }
                 break;
             default:
         }
 
-        if (this.tipoPartida.equals("Duo")) {
-
-        }
     }
 
-    private void checkIzquierda(int x, int y, Personaje personaje) {
-        String propiedad = this.mapa.getCasilla(x, y).getPropiedad();
+    public void comprobarIzquierda(Personaje personaje) {
         int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
+        int xIzquierda = (int) personaje.getX() / anchoCasillas;
+        int ySuelo = ((int) personaje.getY() + (int) personaje.getAlto() + 10) / anchoCasillas;
+        String propiedad = this.mapa.getCasilla(xIzquierda, ySuelo).getPropiedad();
+
         switch (propiedad) {
             case "checkpointOff":
-                this.mapa.activarAntorcha(x, y);
-                personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                this.mapa.activarAntorcha(xIzquierda, ySuelo);
+                personaje.setLastCheckPoint((xIzquierda) * anchoCasillas, (int) personaje.getY());
                 break;
             case "checkpointOn":
                 if (this.tipoPartida.equals("Duo")) {
-                    personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                    personaje.setLastCheckPoint((xIzquierda) * anchoCasillas, (int) personaje.getY());
                 }
                 break;
             default:
@@ -182,34 +150,47 @@ public class Partida implements Runnable {
 
         int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
         int xIzquierda = x / anchoCasillas;
-        int xCentral = (x + (int) personaje.getAncho() / 2) / anchoCasillas;
         int yPies = (y + (int) personaje.getAlto() - 1) / anchoCasillas;
-        int ySuelo = (y + (int) personaje.getAlto() + 10) / anchoCasillas;
-        int yCentral = (y + (int) personaje.getAlto() / 2) / anchoCasillas;
         String propiedadPiesIzq = this.mapa.getCasilla(xIzquierda, yPies).getPropiedad();
-        String propiedadPechoIzq = this.mapa.getCasilla(xIzquierda, yCentral).getPropiedad();
 
-        return (!(propiedadPiesIzq.equals("intransitable") || propiedadPiesIzq.equals("sostenedor")));
+        switch (propiedadPiesIzq) {
+                case "intransitable":
+                    return false;
+                case "sostenedor":
+                    return false;
+                case "trampolin":
+                    return false;
+                default:
+                    return true;
+
+            }
     }
 
     public boolean puedeMoverDerecha(Personaje personaje) {
         int x = (int) personaje.getX();
         int y = (int) personaje.getY();
-        if (x >= 1875) {
+        if (x >= 1880) {
             return false;
         }
         try {
             int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
             int xDerecha = (x + (int) personaje.getAncho() + 1) / anchoCasillas;
-            int xCentral = (x + (int) personaje.getAncho() / 2) / anchoCasillas;
             int yPies = (y + (int) personaje.getAlto() - 1) / anchoCasillas;
-            int yCentral = (y + (int) personaje.getAlto() / 2) / anchoCasillas;
-            int ySuelo = (y + (int) personaje.getAlto() + 10) / anchoCasillas;
 
             String propiedadPiesDer = this.mapa.getCasilla(xDerecha, yPies).getPropiedad();
-            String propiedadPechoDer = this.mapa.getCasilla(xDerecha, yCentral).getPropiedad();
 
-            return (!(propiedadPiesDer.equals("intransitable") || propiedadPiesDer.equals("sostenedor")));
+            switch (propiedadPiesDer) {
+                case "intransitable":
+                    return false;
+                case "sostenedor":
+                    return false;
+                case "trampolin":
+                    return false;
+                default:
+                    return true;
+
+            }
+
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -218,48 +199,61 @@ public class Partida implements Runnable {
 
     }
 
-    private void checkSuelo(int x, int y, Personaje personaje) {
-        String propiedad = this.mapa.getCasilla(x, y).getPropiedad();
-        int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
+    public void commprobarSuelo(Personaje personaje) {
+        int anchoCasillas = 40;
+        int xCentral = ((int) personaje.getX() + (int) personaje.getAncho() / 2) / anchoCasillas;
+        int ySuelo = ((int) personaje.getY() + (int) personaje.getAlto() + 10) / anchoCasillas;
+
+        String propiedad = this.mapa.getCasilla(xCentral, ySuelo).getPropiedad();
+        System.out.println(propiedad);
         switch (propiedad) {
             case "checkpointOff":
-                personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                personaje.setLastCheckPoint((xCentral) * anchoCasillas, (int) personaje.getY());
             case "transitable":
+            case "agua":
                 personaje.setFalling(true);
                 personaje.setEstaSobreSuelo(false);
                 break;
             case "sostenedor":
                 personaje.setEstaSobreSuelo(true);
-                personaje.setY((y) * anchoCasillas - (int) personaje.getAlto());
+                personaje.setY((ySuelo) * anchoCasillas - (int) personaje.getAlto());
                 break;
-//            case "eliminatorio":
-//                personaje.matar();
-//                break;
+            case "eliminatorio":
+                personaje.matar();
+                break;
             case "checkpointOn":
                 if (this.tipoPartida.equals("Duo")) {
-                    personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                    personaje.setLastCheckPoint((xCentral) * anchoCasillas, (int) personaje.getY());
                 }
+                break;
+            case "trampolin":
+                personaje.setEstaSobreSuelo(true);
+                personaje.setJumping(false);
+                personaje.setY((ySuelo) * anchoCasillas - (int) personaje.getAlto());
+                personaje.saltar(15);
                 break;
             default:
         }
     }
 
-    private void checkPies(int x, int y, Personaje personaje) {
-        String propiedad = this.mapa.getCasilla(x, y).getPropiedad();
-        int anchoCasillas = this.mapa.getCasilla(0, 0).getImage().getWidth(null);
+    public void comprobarPies(Personaje personaje) {
+        int anchoCasillas = 40;
+        int xCentral = ((int) personaje.getX() + (int) personaje.getAncho() / 2) / anchoCasillas;
+        int yPies = ((int) personaje.getY() + (int) personaje.getAlto() - 1) / anchoCasillas;
+        String propiedad = this.mapa.getCasilla(xCentral, yPies).getPropiedad();
         switch (propiedad) {
             case "checkpointOff":
-                this.mapa.activarAntorcha(x, y);
-                personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                this.mapa.activarAntorcha(xCentral, yPies);
+                personaje.setLastCheckPoint((xCentral) * anchoCasillas, (int) personaje.getY());
                 break;
             case "checkpointOn":
                 if (this.tipoPartida.equals("Duo")) {
-                    personaje.setLastCheckPoint((x) * anchoCasillas, (int) personaje.getY());
+                    personaje.setLastCheckPoint((xCentral) * anchoCasillas, (int) personaje.getY());
                 }
                 break;
             case "finalizableOff":
                 personaje.setEnMeta(true);
-                this.mapa.activarMeta(x, y);
+                this.mapa.activarMeta(xCentral, yPies);
                 this.tiempo.pausar();
                 break;
             case "finalizableOn":
@@ -270,13 +264,10 @@ public class Partida implements Runnable {
             case "eliminatorio":
                 personaje.matar();
                 break;
-            case "trampolin":
-                personaje.saltar(18);
-                break;
         }
 
         if (propiedad.equals("agua")) {
-            personaje.setBuffMovimiento(-1);
+            personaje.setBuffMovimiento(-3);
         } else {
             personaje.setBuffMovimiento(0);
         }
