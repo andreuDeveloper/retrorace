@@ -27,7 +27,6 @@ public class Mapa {
     private String nombre, imgRoute;
     private ArrayList<Casilla> casillas;
     private int[][] distribucion;
-    private int x_pj;
     private Image image;
 
     public Mapa() {
@@ -42,6 +41,7 @@ public class Mapa {
             cargarCasillas();
             ImageIcon ii = new ImageIcon(imgRoute);
             image = ii.getImage();
+            this.animar();
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Mapa.class.getName()).log(Level.SEVERE, null, ex);
@@ -54,16 +54,6 @@ public class Mapa {
      * @param g Graphics
      * @param x coordenada Int
      */
-//    public void mover(Graphics g, int x) {
-//        if (x > this.distribucion[0].length - 18) {
-//            this.x_pj = this.distribucion[0].length - 18;
-//        } else if (x < 0) {
-//            this.x_pj = 0;
-//        } else {
-//            this.x_pj = x;
-//        }
-//        paint(g);
-//    }
     /**
      * Devuelve la casilla en relación a las coordenadas proporcionadas
      *
@@ -77,9 +67,9 @@ public class Mapa {
                 return this.casillas.get(this.distribucion[this.distribucion.length - 1][this.distribucion[0].length - 1]);
             } else if ((this.distribucion.length - 1) < y) {
                 return this.casillas.get(this.distribucion[this.distribucion.length - 1][x]);
-            } else if((this.distribucion[0].length - 1) < x) {
+            } else if ((this.distribucion[0].length - 1) < x) {
                 return this.casillas.get(this.distribucion[y][this.distribucion[0].length - 1]);
-            }else  {
+            } else {
                 return this.casillas.get(this.distribucion[y][x]);
             }
         } catch (Exception e) {
@@ -91,7 +81,7 @@ public class Mapa {
         for (int row = 0; row <= 26; row++) {
             for (int col = 0; col <= 47; col++) {
 
-                Image i = this.casillas.get(this.distribucion[row][col + x_pj]).getImage();
+                Image i = this.casillas.get(this.distribucion[row][col]).getImage();
                 int xs = (col * i.getWidth(null));
                 int y = (row * i.getHeight(null));
                 int w = i.getWidth(null);
@@ -108,9 +98,55 @@ public class Mapa {
         }
     }
 
+    public void activarMeta(int x, int y) {
+        if (this.distribucion[y][x] == 11) {
+            this.distribucion[y][x] = 5;
+        }
+    }
+
+    public void animar() {
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Mapa.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    for (int row = 0; row <= 26; row++) {
+                        for (int col = 0; col <= 47; col++) {
+                            
+                            switch (distribucion[row][col]) {
+                                case 5:
+                                    distribucion[row][col] = 10;
+                                    break;
+                                case 10:
+                                    distribucion[row][col] = 5;
+                                    break;
+                                case 9:
+                                    distribucion[row][col] = 12;
+                                    break;
+                                case 12:
+                                    distribucion[row][col] = 9;
+                                    break;
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        );
+
+// start the thread
+        thread.start();
+
+    }
+
     /*
     Carga todos los tipos de casillas.
      */
+
     public void cargarCasillas() throws FileNotFoundException {
         Gson gson = new Gson();
         this.casillas = gson.fromJson(new FileReader("data/casillas.json"), new TypeToken<List<Casilla>>() {
@@ -126,10 +162,6 @@ public class Mapa {
 
     public void setDistribucion(int[][] distribucion) {
         this.distribucion = distribucion;
-    }
-
-    public int getX_pj() {
-        return x_pj;
     }
 
     public String getNombre() {
