@@ -5,8 +5,6 @@
  */
 package retrorace;
 
-
-
 /**
  *
  * @author sosan
@@ -17,12 +15,8 @@ public class Retrorace {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-      
         Juego j = new Juego();
         j.initJuego();
-
     }
-
-
 
 }
