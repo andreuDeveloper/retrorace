@@ -126,7 +126,7 @@
   {
     "id":20,
     "imgRoute":"img/mapa/casillas/Roca.png",
-    "propiedad":"transitable"
+    "propiedad":"sostenedor"
   }
 
 ]

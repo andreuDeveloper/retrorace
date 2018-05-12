@@ -34,7 +34,7 @@ public class Personaje implements Runnable {
     private boolean falling = true;
     private boolean jumping = false;
     private boolean muerto = false;
-    private final double fuerzaSalto = 11.5;
+    private final double fuerzaSalto = 11.9;
     private boolean movingLeft = false;
     private boolean movingRight = false;
     private boolean estaSobreSuelo = false;
