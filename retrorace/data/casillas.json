@@ -29,7 +29,7 @@
   {
     "id":5,
     "imgRoute":"img/mapa/casillas/Fin_Activo.png",
-    "propiedad":"finalizable"
+    "propiedad":"finalizableOn"
   }
 ,
   {
@@ -53,6 +53,80 @@
     "id":9,
     "imgRoute":"img/mapa/casillas/Antorcha_Activa.png",
     "propiedad":"checkpointOn"
+  }
+,
+  {
+    "id":10,
+    "imgRoute":"img/mapa/casillas/Fin_Activo2.png",
+    "propiedad":"finalizableOn"
+  }
+,
+  {
+    "id":11,
+    "imgRoute":"img/mapa/casillas/Fin_Desactivado.png",
+    "propiedad":"finalizableOff"
+  }
+,
+  {
+    "id":12,
+    "imgRoute":"img/mapa/casillas/Antorcha_Activa2.png",
+    "propiedad":"checkpointOn"
+  }
+,
+  {
+    "id":13,
+    "imgRoute":"img/mapa/casillas/pasarela.png",
+    "propiedad":"sostenedor"
+  }
+,
+  {
+    "id":14,
+    "imgRoute":"img/mapa/casillas/Plataforma_Izquierda.png",
+    "propiedad":"sostenedor"
+  }
+
+,
+  {
+    "id":15,
+    "imgRoute":"img/mapa/casillas/Plataforma_Derecha.png",
+    "propiedad":"sostenedor"
+  }
+
+,
+  {
+    "id":16,
+    "imgRoute":"img/mapa/casillas/Agua.png",
+    "propiedad":"agua"
+  }
+,
+  {
+    "id":16,
+    "imgRoute":"img/mapa/casillas/Trampolin.png",
+    "propiedad":"trampolin"
+  }
+,
+  {
+    "id":17,
+    "imgRoute":"img/mapa/casillas/Seta.png",
+    "propiedad":"transitable"
+  }
+,
+  {
+    "id":18,
+    "imgRoute":"img/mapa/casillas/Planta.png",
+    "propiedad":"transitable"
+  }
+,
+  {
+    "id":19,
+    "imgRoute":"img/mapa/casillas/Cactus.png",
+    "propiedad":"transitable"
+  }
+,
+  {
+    "id":20,
+    "imgRoute":"img/mapa/casillas/Roca.png",
+    "propiedad":"transitable"
   }
 
 ]

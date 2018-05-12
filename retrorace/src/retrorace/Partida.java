@@ -259,14 +259,14 @@ public class Partida implements Runnable {
                 break;
             case "finalizableOff":
                 personaje.setEnMeta(true);
-                //this.mapa.activarMeta(x, y);
+                this.mapa.activarMeta(x, y);
                 this.tiempo.pausar();
                 break;
             case "finalizableOn":
                 if (this.tipoPartida.equals("Duo")) {
                     personaje.setEnMeta(true);
                 }
-
+                break;
             case "eliminatorio":
                 personaje.matar();
                 break;
