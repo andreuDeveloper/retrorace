@@ -5,16 +5,11 @@
  */
 package retrorace;
 
-import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -25,9 +20,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import javafx.scene.layout.Border;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -47,6 +40,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     private Gamescreen gamescreen;
 
     private JPanel panelLogin;
+    private JPanel panelRegister;
     private JPanel panelMenu;
     private JPanel panelMapChoice;
     private JPanel panelGamescreen;
@@ -61,13 +55,23 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     private JButton btnRegister;
     private JLabel lblErrorLogin;
 
+    /*Register Panel*/
+    private JTextField txtRegisterUsername;
+    private JTextField txtRegisterPassword;
+    private JTextField txtRegisterPassword2;
+    private JButton btnRegisterComplete;
+    private JButton btnRegisterCancel;
+    private JLabel lblErrorRegister;
+    
     /*Menu panel*/
     private JButton btnSinglePlayer;
+    private JButton btnDuoPlayer;
     private JButton btnMultiPlayer;
     private JButton btnRanking;
 
     /*Choice Map panel*/
     private ArrayList<JButton> btnMap;
+    private String tipoPartida;
 
     //ranking
     /*CONSTRUCTOR*/
@@ -203,8 +207,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         panelLogin.add(lblPassword, c);
 
         txtPassword = new JPasswordField();
-        txtPassword.setEnabled(false);
-        txtPassword.setEditable(false);//CAMBIA
+        txtPassword.addKeyListener(this);
 
         c.gridx = 0;
         c.gridy = 4;
@@ -217,7 +220,6 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         btnRegister = new JButton("Registrarse");
         btnLogin.addActionListener(this);
         btnRegister.addActionListener(this);
-        btnRegister.setEnabled(false);//CAMBIA
 
         JPanel panelAuxBtn = new JPanel(new GridLayout(1, 2, 5, 5));
         panelAuxBtn.add(btnLogin);
@@ -330,8 +332,11 @@ c.ipady=15;
 
         btnSinglePlayer = new JButton("Un jugador");
         btnSinglePlayer.addActionListener(this);
+        
+        btnDuoPlayer = new JButton("Dos jugadores");
+        btnDuoPlayer.addActionListener(this);
 
-        btnMultiPlayer = new JButton("Multijugador");
+        btnMultiPlayer = new JButton("Multijugador online");
         btnMultiPlayer.addActionListener(this);
         btnMultiPlayer.setEnabled(false);
 
@@ -339,8 +344,9 @@ c.ipady=15;
         btnRanking.addActionListener(this);
         btnRanking.setEnabled(false);
 
-        JPanel panelAuxMenu = new JPanel(new GridLayout(3, 1, 5, 15));
+        JPanel panelAuxMenu = new JPanel(new GridLayout(4, 1, 5, 15));
         panelAuxMenu.add(btnSinglePlayer);
+        panelAuxMenu.add(btnDuoPlayer);
         panelAuxMenu.add(btnMultiPlayer);
         panelAuxMenu.add(btnRanking);
 
@@ -355,6 +361,126 @@ c.ipady=15;
         return panelMenu;
     }
 
+    private JPanel createComponentRegister(){
+        panelRegister = new JPanel();
+        int margin = 2 * this.getWidth() / 5;
+        panelRegister.setBorder(BorderFactory.createEmptyBorder(0, margin, 0, margin));
+        panelRegister.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.insets = new Insets(5, 5, 5, 5);
+
+        JLabel lblWelcome = new JLabel("REGISTRO");
+        lblWelcome.setFont(new Font("Arial Black", 0, 28));
+        lblWelcome.setForeground(Color.BLUE);
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 2;
+        c.ipady = 35;
+
+        c.fill = GridBagConstraints.CENTER;
+        panelRegister.add(lblWelcome, c);
+
+        JLabel lblUsername = new JLabel("Usuario");
+
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 2;
+        c.ipady = 10;
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panelRegister.add(lblUsername, c);
+
+        txtRegisterUsername = new JTextField();
+        txtRegisterUsername.addKeyListener(this);
+        
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.BOTH;
+        panelRegister.add(txtRegisterUsername, c);
+
+        JLabel lblPassword = new JLabel("Password");
+
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panelRegister.add(lblPassword, c);
+
+        txtRegisterPassword = new JPasswordField();
+        txtRegisterPassword.addKeyListener(this);
+
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.BOTH;
+        panelRegister.add(txtRegisterPassword, c);
+        
+        JLabel lblPassword2 = new JLabel("Repetir Password");
+
+        c.gridx = 0;
+        c.gridy = 5;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panelRegister.add(lblPassword2, c);
+
+        txtRegisterPassword2 = new JPasswordField();
+        txtRegisterPassword2.addKeyListener(this);
+
+        c.gridx = 0;
+        c.gridy = 6;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.BOTH;
+        panelRegister.add(txtRegisterPassword2, c);
+
+        btnRegisterComplete = new JButton("Registrarse");
+        btnRegisterCancel = new JButton("Cancelar");
+        btnRegisterComplete.addActionListener(this);
+        btnRegisterCancel.addActionListener(this);
+
+        JPanel panelAuxBtn = new JPanel(new GridLayout(1, 2, 5, 5));
+        panelAuxBtn.add(btnRegisterComplete);
+        panelAuxBtn.add(btnRegisterCancel);
+
+        c.gridx = 0;
+        c.gridy = 7;
+        c.gridwidth = 2;
+
+        c.weightx = 1.0d;
+
+        panelRegister.add(panelAuxBtn, c);
+
+        lblErrorRegister = new JLabel("");
+        lblErrorRegister.setFont(new Font("Arial", 0, 12));
+        lblErrorRegister.setForeground(Color.RED);
+
+        c.gridx = 0;
+        c.gridy = 8;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.CENTER;
+
+        panelRegister.add(lblErrorRegister, c);
+        return panelRegister;
+    }
+    
+    private void initRegister(){
+        panelLogin.setVisible(false);
+        if(panelRegister == null){
+            this.getContentPane().add(createComponentRegister(), BorderLayout.CENTER);
+        }else{
+            panelRegister.setVisible(true);
+        }
+        txtRegisterUsername.requestFocus();
+    }
+    
     private void initSesion() {
         //CAMBIAR 
         String username = txtUsername.getText();
@@ -367,7 +493,7 @@ c.ipady=15;
         }
     }
 
-    private void initSinglePlayer() {
+    private void initMapChoice() {
         panelMenu.setVisible(false);
         btnBack.setVisible(true);
         if (panelMapChoice == null) {
@@ -381,13 +507,13 @@ c.ipady=15;
     private void initPartida(int numMap) {
         panelMapChoice.setVisible(false);
         if (panelGamescreen == null) {
-            gamescreen = new Gamescreen(this,sesion.initPartida(numMap));
+            gamescreen = new Gamescreen(this,sesion.initPartida(numMap,tipoPartida));
             this.getContentPane().add(createComponentGamescreen(), BorderLayout.CENTER);
             gamescreen.setSize(getWidth(), getHeight() - btnExit.getHeight() - 2 * btnExit.getY());
 //            gamescreen.setSize(1280, 700);
         } else {
             panelGamescreen.setVisible(true);
-            gamescreen.setPartida(sesion.initPartida(numMap));
+            gamescreen.setPartida(sesion.initPartida(numMap,tipoPartida));
         }
 
         new Thread(this.gamescreen).start();
@@ -406,6 +532,27 @@ c.ipady=15;
         return !(username.equals(""));
     }
 
+    private boolean checkIfUsernameExists(){
+        return juego.checkIfUsernameExists(txtRegisterUsername.getText());
+    }
+    
+    private void registerUser(){
+        if(txtRegisterUsername.getText().equals("") || txtRegisterPassword.getText().equals("") || txtRegisterPassword2.getText().equals("") ){
+            lblErrorRegister.setText("ERROR: Debes rellenar todos los campos");
+        }
+        else if(!txtRegisterPassword.getText().equals(txtRegisterPassword2.getText())){
+            lblErrorRegister.setText("ERROR: Las contraseñas no coinciden");
+        }
+        else if(checkIfUsernameExists()){
+            lblErrorRegister.setText("ERROR: El nombre de usuario ya está en uso");
+        }else{
+            juego.registerUser(txtRegisterUsername.getText(),txtRegisterPassword.getText());
+            panelRegister.setVisible(false);
+            panelLogin.setVisible(true);
+            lblErrorLogin.setText("Usuario registrado correctamente.");
+        }
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e) {
         JButton btnAux = (JButton) e.getSource();
@@ -420,11 +567,25 @@ c.ipady=15;
         if (panelLogin.isVisible()) {
             if (btnAux == btnLogin) {
                 initSesion();
+            } else if (btnAux == btnRegister){
+                initRegister();
+            }
+            
+        }else if(panelRegister != null && panelRegister.isVisible()){
+            if (btnAux == btnRegisterComplete){
+                registerUser();
+            }else if (btnAux == btnRegisterCancel){
+                panelRegister.setVisible(false);
+                panelLogin.setVisible(true);
             }
             //Acciones panel menu
         } else if (panelMenu.isVisible()) {
             if (btnAux == btnSinglePlayer) {
-                initSinglePlayer();
+                initMapChoice();
+                tipoPartida="Single";
+            }else if (btnAux == btnDuoPlayer){
+                initMapChoice();
+                tipoPartida="Duo";
             }
         } else if (panelMapChoice.isVisible()) {
             if (btnAux == btnBack) {
@@ -443,14 +604,25 @@ c.ipady=15;
                 sesion.endPartida();
                 panelMapChoice.setVisible(true);
                 panelGamescreen.setVisible(false);
-
             }
         }
     }
     
      @Override
     public void keyTyped(KeyEvent ke) {
-        //System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
+        if(panelLogin.isVisible()){
+            if(txtUsername.hasFocus() && txtUsername.getText().length()  >= 16 ||
+                    txtPassword.hasFocus() && txtPassword.getText().length()  >= 14){
+                ke.consume();
+            }   
+        }else if (panelRegister.isVisible()){
+            if(txtRegisterUsername.hasFocus() && txtRegisterUsername.getText().length()  >= 16 ||
+                    txtRegisterPassword.hasFocus() && txtRegisterPassword.getText().length()  >= 14 || 
+                    txtRegisterPassword2.hasFocus() && txtRegisterPassword2.getText().length()  >= 14){
+                ke.consume();
+            }
+        }
+                
     }
 
     @Override
