@@ -193,7 +193,9 @@ public class Personaje implements Runnable {
     }
 
     public void setEnMeta(boolean enMeta) {
-        this.enMeta = enMeta;
+        if (!this.enMeta) {
+            this.enMeta = enMeta;
+        }
     }
 
     public double getBuffMovimiento() {
