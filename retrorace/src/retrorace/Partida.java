@@ -205,7 +205,6 @@ public class Partida implements Runnable {
         int ySuelo = ((int) personaje.getY() + (int) personaje.getAlto() + 10) / anchoCasillas;
 
         String propiedad = this.mapa.getCasilla(xCentral, ySuelo).getPropiedad();
-        System.out.println(propiedad);
         switch (propiedad) {
             case "checkpointOff":
                 personaje.setLastCheckPoint((xCentral) * anchoCasillas, (int) personaje.getY());
