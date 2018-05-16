@@ -29,9 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-
-    
-   
 public class GUI extends JFrame implements ActionListener, KeyListener {
 
     private Juego juego;
@@ -62,7 +59,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     private JButton btnRegisterComplete;
     private JButton btnRegisterCancel;
     private JLabel lblErrorRegister;
-    
+
     /*Menu panel*/
     private JButton btnSinglePlayer;
     private JButton btnDuoPlayer;
@@ -91,7 +88,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         this.setAlwaysOnTop(true);
         GraphicsDevice gd
                 = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        
+
         if (gd.isFullScreenSupported()) {
             setUndecorated(true);
             gd.setFullScreenWindow(this);
@@ -108,7 +105,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     void setPartidaInGamescreen(Partida partida) {
         gamescreen.setPartida(partida);
     }
-    
+
     private void addUIComponents(Container panel) {
         panel.add(createComponentExit(), BorderLayout.NORTH);
         panel.add(createComponentLogin(), BorderLayout.CENTER);
@@ -150,7 +147,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         GridBagConstraints c = new GridBagConstraints();
 
         //panelGamescreen.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        panelGamescreen.add(gamescreen,c);
+        panelGamescreen.add(gamescreen, c);
         panelGamescreen.setBackground(Color.BLACK);
 
         return panelGamescreen;
@@ -284,12 +281,12 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
         int numMaps = sesion.getMapas().size();
         btnMap = new ArrayList();
-        
+
         sesion.loadMaps();
-        
+
         JPanel panelAuxMaps = new JPanel(new GridLayout(sesion.getMapas().size(), 1, 5, 15));
-        
-        for(Mapa m:sesion.getMapas()){
+
+        for (Mapa m : sesion.getMapas()) {
             btnMap.add(new JButton(m.getNombre()));
         }
 
@@ -300,7 +297,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
         c.gridx = 0;
         c.gridy = 1;
-c.ipady=15;
+        c.ipady = 15;
         c.weightx = 1.0d;
         c.fill = GridBagConstraints.BOTH;
 
@@ -332,7 +329,7 @@ c.ipady=15;
 
         btnSinglePlayer = new JButton("Un jugador");
         btnSinglePlayer.addActionListener(this);
-        
+
         btnDuoPlayer = new JButton("Dos jugadores");
         btnDuoPlayer.addActionListener(this);
 
@@ -361,7 +358,7 @@ c.ipady=15;
         return panelMenu;
     }
 
-    private JPanel createComponentRegister(){
+    private JPanel createComponentRegister() {
         panelRegister = new JPanel();
         int margin = 2 * this.getWidth() / 5;
         panelRegister.setBorder(BorderFactory.createEmptyBorder(0, margin, 0, margin));
@@ -394,7 +391,7 @@ c.ipady=15;
 
         txtRegisterUsername = new JTextField();
         txtRegisterUsername.addKeyListener(this);
-        
+
         c.gridx = 0;
         c.gridy = 2;
         c.gridwidth = 2;
@@ -420,7 +417,7 @@ c.ipady=15;
 
         c.fill = GridBagConstraints.BOTH;
         panelRegister.add(txtRegisterPassword, c);
-        
+
         JLabel lblPassword2 = new JLabel("Repetir Password");
 
         c.gridx = 0;
@@ -470,27 +467,35 @@ c.ipady=15;
         panelRegister.add(lblErrorRegister, c);
         return panelRegister;
     }
-    
-    private void initRegister(){
+
+    private void initRegister() {
         panelLogin.setVisible(false);
-        if(panelRegister == null){
+        if (panelRegister == null) {
             this.getContentPane().add(createComponentRegister(), BorderLayout.CENTER);
-        }else{
+        } else {
             panelRegister.setVisible(true);
         }
         txtRegisterUsername.requestFocus();
     }
-    
+
     private void initSesion() {
-        //CAMBIAR 
-        String username = txtUsername.getText();
-        if (checkUser(username)) {
-            panelLogin.setVisible(false);
-            juego.initSesion(username);
+        if (txtUsername.getText().equals("") || txtPassword.getText().equals("")) {
+            lblErrorLogin.setText("ERROR: Rellena todos los campos");
+        }else if (juego.checkConnectionDB()) {
+            if(!checkIfUsernameExists(txtUsername.getText())){
+                lblErrorLogin.setText("ERROR: No existe ningún usuario con ese nombre.");
+            }else if(checkCredentials(txtUsername.getText(),txtPassword.getText())){
+                panelLogin.setVisible(false);
+            juego.initSesion(txtUsername.getText());
             this.getContentPane().add(createComponentMenu(), BorderLayout.CENTER);
-        } else {
-            lblErrorLogin.setText("ERROR: Introduce un nombre de usuario");
+            }else{
+                lblErrorLogin.setText("ERROR: Contraseña incorrecta.");
+            }
+        
+        }else {
+            lblErrorLogin.setText("ERROR: Error de conexión. Intentalo más tarde.");
         }
+        
     }
 
     private void initMapChoice() {
@@ -507,17 +512,17 @@ c.ipady=15;
     private void initPartida(int numMap) {
         panelMapChoice.setVisible(false);
         if (panelGamescreen == null) {
-            gamescreen = new Gamescreen(this,sesion.initPartida(numMap,tipoPartida));
+            gamescreen = new Gamescreen(this, sesion.initPartida(numMap, tipoPartida));
             this.getContentPane().add(createComponentGamescreen(), BorderLayout.CENTER);
             gamescreen.setSize(getWidth(), getHeight() - btnExit.getHeight() - 2 * btnExit.getY());
 //            gamescreen.setSize(1280, 700);
         } else {
             panelGamescreen.setVisible(true);
-            gamescreen.setPartida(sesion.initPartida(numMap,tipoPartida));
+            gamescreen.setPartida(sesion.initPartida(numMap, tipoPartida));
         }
 
         new Thread(this.gamescreen).start();
-        this.gamescreen.setBackground(new Color(208, 244, 247));  
+        this.gamescreen.setBackground(new Color(208, 244, 247));
         this.gamescreen.requestFocus();
     }
 
@@ -527,32 +532,33 @@ c.ipady=15;
         return resp == 0;
     }
 
-    private boolean checkUser(String username) {
-        //CAMBIAR checkear user y password
-        return !(username.equals(""));
+    private boolean checkCredentials(String username, String password) {
+        return juego.checkCredentials(username,password);
     }
 
-    private boolean checkIfUsernameExists(){
-        return juego.checkIfUsernameExists(txtRegisterUsername.getText());
+    private boolean checkIfUsernameExists(String username) {
+        return juego.checkIfUsernameExists(username);
     }
-    
-    private void registerUser(){
-        if(txtRegisterUsername.getText().equals("") || txtRegisterPassword.getText().equals("") || txtRegisterPassword2.getText().equals("") ){
+
+    private void registerUser() {
+        if (txtRegisterUsername.getText().equals("") || txtRegisterPassword.getText().equals("") || txtRegisterPassword2.getText().equals("")) {
             lblErrorRegister.setText("ERROR: Debes rellenar todos los campos");
-        }
-        else if(!txtRegisterPassword.getText().equals(txtRegisterPassword2.getText())){
+        } else if (!txtRegisterPassword.getText().equals(txtRegisterPassword2.getText())) {
             lblErrorRegister.setText("ERROR: Las contraseñas no coinciden");
-        }
-        else if(checkIfUsernameExists()){
-            lblErrorRegister.setText("ERROR: El nombre de usuario ya está en uso");
-        }else{
-            juego.registerUser(txtRegisterUsername.getText(),txtRegisterPassword.getText());
-            panelRegister.setVisible(false);
-            panelLogin.setVisible(true);
-            lblErrorLogin.setText("Usuario registrado correctamente.");
+        } else if (juego.checkConnectionDB()) {
+            if (checkIfUsernameExists(txtRegisterUsername.getText())) {
+                lblErrorRegister.setText("ERROR: El nombre de usuario ya está en uso");
+            } else {
+                juego.registerUser(txtRegisterUsername.getText(), txtRegisterPassword.getText());
+                panelRegister.setVisible(false);
+                panelLogin.setVisible(true);
+                lblErrorLogin.setText("Usuario registrado correctamente.");
+            }
+        } else {
+            lblErrorRegister.setText("ERROR: Error de conexión. Intentalo más tarde.");
         }
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent e) {
         JButton btnAux = (JButton) e.getSource();
@@ -567,14 +573,14 @@ c.ipady=15;
         if (panelLogin.isVisible()) {
             if (btnAux == btnLogin) {
                 initSesion();
-            } else if (btnAux == btnRegister){
+            } else if (btnAux == btnRegister) {
                 initRegister();
             }
-            
-        }else if(panelRegister != null && panelRegister.isVisible()){
-            if (btnAux == btnRegisterComplete){
+
+        } else if (panelRegister != null && panelRegister.isVisible()) {
+            if (btnAux == btnRegisterComplete) {
                 registerUser();
-            }else if (btnAux == btnRegisterCancel){
+            } else if (btnAux == btnRegisterCancel) {
                 panelRegister.setVisible(false);
                 panelLogin.setVisible(true);
             }
@@ -582,10 +588,10 @@ c.ipady=15;
         } else if (panelMenu.isVisible()) {
             if (btnAux == btnSinglePlayer) {
                 initMapChoice();
-                tipoPartida="Single";
-            }else if (btnAux == btnDuoPlayer){
+                tipoPartida = "Single";
+            } else if (btnAux == btnDuoPlayer) {
                 initMapChoice();
-                tipoPartida="Duo";
+                tipoPartida = "Duo";
             }
         } else if (panelMapChoice.isVisible()) {
             if (btnAux == btnBack) {
@@ -599,7 +605,7 @@ c.ipady=15;
                     initPartida(btnMap.indexOf(btnAuxMap));
                 }
             }
-        }else if(panelGamescreen.isVisible()){
+        } else if (panelGamescreen.isVisible()) {
             if (btnAux == btnBack) {
                 sesion.endPartida();
                 panelMapChoice.setVisible(true);
@@ -607,29 +613,34 @@ c.ipady=15;
             }
         }
     }
-    
-     @Override
+
+    @Override
     public void keyTyped(KeyEvent ke) {
-        if(panelLogin.isVisible()){
-            if(txtUsername.hasFocus() && txtUsername.getText().length()  >= 16 ||
-                    txtPassword.hasFocus() && txtPassword.getText().length()  >= 14){
+        if (panelLogin.isVisible()) {
+            if (txtUsername.hasFocus() && txtUsername.getText().length() >= 16
+                    || txtPassword.hasFocus() && txtPassword.getText().length() >= 14) {
                 ke.consume();
-            }   
-        }else if (panelRegister.isVisible()){
-            if(txtRegisterUsername.hasFocus() && txtRegisterUsername.getText().length()  >= 16 ||
-                    txtRegisterPassword.hasFocus() && txtRegisterPassword.getText().length()  >= 14 || 
-                    txtRegisterPassword2.hasFocus() && txtRegisterPassword2.getText().length()  >= 14){
+            }
+        } else if (panelRegister.isVisible()) {
+            if (txtRegisterUsername.hasFocus() && txtRegisterUsername.getText().length() >= 16
+                    || txtRegisterPassword.hasFocus() && txtRegisterPassword.getText().length() >= 14
+                    || txtRegisterPassword2.hasFocus() && txtRegisterPassword2.getText().length() >= 14) {
                 ke.consume();
             }
         }
-                
+
     }
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        if (ke.getSource() == this.txtUsername) {
+        if (ke.getSource() == this.txtUsername || ke.getSource() == this.txtPassword) {
             if (ke.VK_ENTER == ke.getKeyCode()) {
                 this.initSesion();
+            }
+        }
+        if (ke.getSource() == this.txtRegisterUsername || ke.getSource() == this.txtRegisterPassword || ke.getSource() == this.txtRegisterPassword2) {
+            if (ke.VK_ENTER == ke.getKeyCode()) {
+                this.registerUser();
             }
         }
     }
@@ -639,5 +650,4 @@ c.ipady=15;
         //System.out.println("keyPressed="+KeyEvent.getKeyText(ke.getKeyCode()));
     }
 
-    
 }

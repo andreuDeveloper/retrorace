@@ -42,4 +42,17 @@ public class Juego {
         
        ujc.create(u);
     }
+
+    boolean checkConnectionDB() {
+        try {  
+            ujc.getUsersCount();
+            return true;
+        }catch(Exception e){
+            return false;
+        }
+    }
+
+    boolean checkCredentials(String username, String password) {
+        return (ujc.checkCredentials(username,Hash.sha1(password))>0);
+    }
 }
