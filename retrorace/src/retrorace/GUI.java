@@ -10,6 +10,7 @@ import java.awt.event.KeyListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -19,8 +20,14 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -41,6 +48,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     private JPanel panelMenu;
     private JPanel panelMapChoice;
     private JPanel panelGamescreen;
+    private JPanel panelRanking;
 
     private JButton btnExit;
     private JButton btnBack;
@@ -51,6 +59,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     private JButton btnLogin;
     private JButton btnRegister;
     private JLabel lblErrorLogin;
+    private JLabel lblLoaderLogin;
 
     /*Register Panel*/
     private JTextField txtRegisterUsername;
@@ -59,6 +68,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     private JButton btnRegisterComplete;
     private JButton btnRegisterCancel;
     private JLabel lblErrorRegister;
+    private JLabel lblLoaderRegister;
 
     /*Menu panel*/
     private JButton btnSinglePlayer;
@@ -70,7 +80,11 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     private ArrayList<JButton> btnMap;
     private String tipoPartida;
 
-    //ranking
+    /*Ranking panel*/
+    private JButton btnMyRanking;
+    private JButton btnGlobalRanking;
+    private ArrayList<JButton> btnMapRanking;
+    
     /*CONSTRUCTOR*/
     public GUI(Juego j) {
 
@@ -242,6 +256,14 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
         panelLogin.add(lblErrorLogin, c);
 
+        c.gridy = 7;
+
+        Icon icon = new ImageIcon("img/gui/loader.gif");
+        lblLoaderLogin = new JLabel(icon);
+        lblLoaderLogin.setVisible(false);
+
+        panelLogin.add(lblLoaderLogin, c);
+
         /*c.gridx = 0;
         c.gridy = 5;
         c.gridwidth = 1;
@@ -339,7 +361,6 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
         btnRanking = new JButton("Ranking");
         btnRanking.addActionListener(this);
-        btnRanking.setEnabled(false);
 
         JPanel panelAuxMenu = new JPanel(new GridLayout(4, 1, 5, 15));
         panelAuxMenu.add(btnSinglePlayer);
@@ -465,9 +486,52 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         c.fill = GridBagConstraints.CENTER;
 
         panelRegister.add(lblErrorRegister, c);
+
+        c.gridy = 9;
+
+        Icon icon = new ImageIcon("img/gui/loader.gif");
+        lblLoaderRegister = new JLabel(icon);
+        lblLoaderRegister.setVisible(false);
+
+        panelRegister.add(lblLoaderRegister, c);
+
         return panelRegister;
     }
 
+    private JPanel createComponentRanking(){
+        panelRanking=new JPanel();
+        int margin = this.getWidth() / 5;
+        panelRanking.setBorder(BorderFactory.createEmptyBorder(0, margin, 0, margin));
+        panelRanking.setLayout(new BorderLayout());
+        
+        JPanel panelTop = new JPanel();
+        panelTop.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        
+        btnMyRanking = new JButton("MI RANKING");
+        btnMyRanking.addActionListener(this);
+        btnGlobalRanking = new JButton("RANKING MUNDIAL");
+        btnGlobalRanking.addActionListener(this);
+        
+        JPanel panelChoiceRanking = new JPanel();
+        panelChoiceRanking.setLayout(new GridLayout(1,2,10,10));
+        
+        panelChoiceRanking.add(btnMyRanking);
+        panelChoiceRanking.add(btnGlobalRanking);
+        
+        c.gridx = 0;
+        c.gridy = 0;
+        c.ipady = 20;
+        c.weightx=1.0d;
+        c.fill = GridBagConstraints.BOTH;
+        
+        panelTop.add(panelChoiceRanking, c);
+        
+        panelRanking.add(panelTop,BorderLayout.NORTH);
+
+        return panelRanking;
+    }
+    
     private void initRegister() {
         panelLogin.setVisible(false);
         if (panelRegister == null) {
@@ -479,23 +543,31 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     }
 
     private void initSesion() {
-        if (txtUsername.getText().equals("") || txtPassword.getText().equals("")) {
-            lblErrorLogin.setText("ERROR: Rellena todos los campos");
-        }else if (juego.checkConnectionDB()) {
-            if(!checkIfUsernameExists(txtUsername.getText())){
-                lblErrorLogin.setText("ERROR: No existe ningún usuario con ese nombre.");
-            }else if(checkCredentials(txtUsername.getText(),txtPassword.getText())){
-                panelLogin.setVisible(false);
-            juego.initSesion(txtUsername.getText());
-            this.getContentPane().add(createComponentMenu(), BorderLayout.CENTER);
-            }else{
-                lblErrorLogin.setText("ERROR: Contraseña incorrecta.");
+        blockLoginPanel(true);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (txtUsername.getText().equals("") || txtPassword.getText().equals("")) {
+                    lblErrorLogin.setText("ERROR: Rellena todos los campos");
+                } else if (juego.checkConnectionDB()) {
+                    if (!checkIfUsernameExists(txtUsername.getText())) {
+                        lblErrorLogin.setText("ERROR: No existe ningún usuario con ese nombre.");
+                    } else if (checkCredentials(txtUsername.getText(), txtPassword.getText())) {
+                        panelLogin.setVisible(false);
+                        juego.initSesion(txtUsername.getText());
+                        getContentPane().add(createComponentMenu(), BorderLayout.CENTER);
+                    } else {
+                        lblErrorLogin.setText("ERROR: Contraseña incorrecta.");
+                    }
+
+                } else {
+                    lblErrorLogin.setText("ERROR: Error de conexión. Intentalo más tarde.");
+                }
+                blockLoginPanel(false);
             }
-        
-        }else {
-            lblErrorLogin.setText("ERROR: Error de conexión. Intentalo más tarde.");
         }
-        
+        );
+        t.start();
     }
 
     private void initMapChoice() {
@@ -526,6 +598,16 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         this.gamescreen.requestFocus();
     }
 
+    private void initRanking(){
+        panelMenu.setVisible(false);
+        btnBack.setVisible(true);
+        if (panelRanking == null) {
+            this.getContentPane().add(createComponentRanking(), BorderLayout.CENTER);
+        } else {
+            panelRanking.setVisible(true);
+        }
+    }
+    
     private boolean checkExit() {
         int resp = JOptionPane.showInternalConfirmDialog(this.getContentPane(), "¿Seguro que quieres salir?", "Salir", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
@@ -533,7 +615,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     }
 
     private boolean checkCredentials(String username, String password) {
-        return juego.checkCredentials(username,password);
+        return juego.checkCredentials(username, password);
     }
 
     private boolean checkIfUsernameExists(String username) {
@@ -541,22 +623,49 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     }
 
     private void registerUser() {
-        if (txtRegisterUsername.getText().equals("") || txtRegisterPassword.getText().equals("") || txtRegisterPassword2.getText().equals("")) {
-            lblErrorRegister.setText("ERROR: Debes rellenar todos los campos");
-        } else if (!txtRegisterPassword.getText().equals(txtRegisterPassword2.getText())) {
-            lblErrorRegister.setText("ERROR: Las contraseñas no coinciden");
-        } else if (juego.checkConnectionDB()) {
-            if (checkIfUsernameExists(txtRegisterUsername.getText())) {
-                lblErrorRegister.setText("ERROR: El nombre de usuario ya está en uso");
-            } else {
-                juego.registerUser(txtRegisterUsername.getText(), txtRegisterPassword.getText());
-                panelRegister.setVisible(false);
-                panelLogin.setVisible(true);
-                lblErrorLogin.setText("Usuario registrado correctamente.");
+        blockRegisterPanel(true);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (txtRegisterUsername.getText().equals("") || txtRegisterPassword.getText().equals("") || txtRegisterPassword2.getText().equals("")) {
+                    lblErrorRegister.setText("ERROR: Debes rellenar todos los campos");
+                } else if (!txtRegisterPassword.getText().equals(txtRegisterPassword2.getText())) {
+                    lblErrorRegister.setText("ERROR: Las contraseñas no coinciden");
+                } else if (juego.checkConnectionDB()) {
+                    if (checkIfUsernameExists(txtRegisterUsername.getText())) {
+                        lblErrorRegister.setText("ERROR: El nombre de usuario ya está en uso");
+                    } else {
+                        juego.registerUser(txtRegisterUsername.getText(), txtRegisterPassword.getText());
+                        panelRegister.setVisible(false);
+                        panelLogin.setVisible(true);
+                        lblErrorLogin.setText("Usuario registrado correctamente.");
+                    }
+                } else {
+                    lblErrorRegister.setText("ERROR: Error de conexión. Intentalo más tarde.");
+                }
+                blockRegisterPanel(false);
             }
-        } else {
-            lblErrorRegister.setText("ERROR: Error de conexión. Intentalo más tarde.");
-        }
+        });
+        t.start();
+    }
+
+    private void blockLoginPanel(boolean state) {
+        lblLoaderLogin.setVisible(state);
+        lblErrorLogin.setVisible(!state);
+        txtUsername.setEditable(!state);
+        txtPassword.setEditable(!state);
+        btnLogin.setEnabled(!state);
+        btnRegister.setEnabled(!state);
+    }
+
+    private void blockRegisterPanel(boolean state) {
+        lblLoaderRegister.setVisible(state);
+        lblErrorRegister.setVisible(!state);
+        txtRegisterUsername.setEditable(!state);
+        txtRegisterPassword.setEditable(!state);
+        txtRegisterPassword2.setEditable(!state);
+        btnRegisterComplete.setEnabled(!state);
+        btnRegisterCancel.setEnabled(!state);
     }
 
     @Override
@@ -592,8 +701,10 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
             } else if (btnAux == btnDuoPlayer) {
                 initMapChoice();
                 tipoPartida = "Duo";
+            } else if (btnAux == btnRanking){
+                initRanking();
             }
-        } else if (panelMapChoice.isVisible()) {
+        } else if (panelMapChoice != null && panelMapChoice.isVisible()) {
             if (btnAux == btnBack) {
                 panelMapChoice.setVisible(false);
                 panelMenu.setVisible(true);
@@ -605,11 +716,16 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
                     initPartida(btnMap.indexOf(btnAuxMap));
                 }
             }
-        } else if (panelGamescreen.isVisible()) {
+        } else if (panelGamescreen != null &&panelGamescreen.isVisible()) {
             if (btnAux == btnBack) {
                 sesion.endPartida();
                 panelMapChoice.setVisible(true);
                 panelGamescreen.setVisible(false);
+            }
+        } else if (panelRanking.isVisible()){
+             if (btnAux == btnBack) {    
+                panelMenu.setVisible(true);
+                panelRanking.setVisible(false);
             }
         }
     }

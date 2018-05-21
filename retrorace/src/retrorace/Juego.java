@@ -19,12 +19,13 @@ public class Juego {
     
     private Sesion sesion;
     private GUI gui;
-    private UsersJpaController ujc;
+    private DBManager dbManager;
+    
     
     public void initJuego(){
         gui = new GUI(this);
         this.gui.initGUI();
-        ujc = new UsersJpaController(Persistence.createEntityManagerFactory("retroracePU"));
+        dbManager = new DBManager();
     }
 
     void initSesion(String username) {
@@ -32,27 +33,18 @@ public class Juego {
     }
 
     boolean checkIfUsernameExists(String username) {
-        return (ujc.checkIfUserExist(username)>0);
+        return dbManager.checkIfUsernameExists(username);
     }
 
     void registerUser(String username, String password) {
-        Users u = new Users();
-        u.setPassword(Hash.sha1(password));
-        u.setUsername(username);
-        
-       ujc.create(u);
+        dbManager.registerUser(username, password);
     }
 
     boolean checkConnectionDB() {
-        try {  
-            ujc.getUsersCount();
-            return true;
-        }catch(Exception e){
-            return false;
-        }
+        return dbManager.checkConnectionDB();
     }
 
     boolean checkCredentials(String username, String password) {
-        return (ujc.checkCredentials(username,Hash.sha1(password))>0);
+        return dbManager.checkCredentials(username, password);
     }
 }
