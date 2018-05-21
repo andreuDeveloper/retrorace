@@ -14,17 +14,17 @@ import java.net.Socket;
  */
 public class ClientProject {
 
-    private final OutServer serverHandler;
+    private final OutServer outServer;
 
     private Server server;
     private String host;
     private int port;
+    private Partida partida;
     
-    private String userName;
 
     public ClientProject() {
         //this.chatFrame = chatFrame;
-        this.serverHandler = new OutServer(this);
+        this.outServer = new OutServer(this);
     }
 
     /**
@@ -34,13 +34,14 @@ public class ClientProject {
      * @param host Host to do connection
      * @param port Port to do connection
      */
-    public void createConnection(String userName, String host, int port) {
-        this.userName = userName;
+    public void createConnection(String host, int port) {
         this.host = host;
         this.port = port;
-        this.serverHandler.setHOST(host);
-        this.serverHandler.setPORT(port);
-        this.serverHandler.start();
+        //this.outServer.setHOST(host);
+       this.outServer.setHOST("localhost");
+        //this.outServer.setPORT(port);
+        this.outServer.setPORT(8888);
+        this.outServer.start();
     }
 
     /**
@@ -50,18 +51,6 @@ public class ClientProject {
      */
     public void sendMessage(String msg) {
         System.out.println("MESSAGE SENDED: " + msg);
-        this.server.sendMessage(this.userName, msg);
-    }
-
-    /**
-     * Add a new message to the text area
-     *
-     * @param msg
-     */
-    public void addMessage(String msg) {
-        System.out.println("MESSAGE RECEIVED: " + msg);
-        //this.chatFrame.addMessage(msg);
-        
     }
 
     /**
@@ -80,10 +69,12 @@ public class ClientProject {
      */
     public void addServer(Socket sock) {
         this.server = new Server(this, sock);
+        this.server.setPartida(this.partida);
+        
         new Thread(this.server).start();
+        this.partida.setServer(server);
 
         System.out.println("Server created");
-        this.addMessage("Connected to: " + this.host + " : " + this.port);
     }
 
     /**
@@ -91,9 +82,12 @@ public class ClientProject {
      */
     public void removeServer() {
         this.server = null;
-
         System.out.println("Server Removed");
-        this.addMessage("Connection lost, trying to reconnect ...");
+
+    }
+
+    void setPartida(Partida partida) {
+        this.partida = partida;
     }
 
 }

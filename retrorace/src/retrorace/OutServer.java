@@ -59,6 +59,7 @@ public class OutServer extends Thread{
                 Thread.sleep(1500);
             } catch (InterruptedException ex) {
                 System.out.println(ex.getMessage());
+                ex.printStackTrace();
             }
         }
     }
@@ -74,7 +75,7 @@ public class OutServer extends Thread{
             System.out.println("Connected to: " + HOST + ":" + PORT);
             this.cp.addServer(socket);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println("$CLIENT-RETRORACE$");
+            out.println("$PLAYER-RETRORACE$");
         } catch (IOException e) {
             System.out.println("Cant connect to: "+ e.getMessage());
         }

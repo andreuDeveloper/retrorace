@@ -47,6 +47,7 @@ public class Personaje implements Runnable {
     private boolean enMeta;
     private Timer animacion;
     private String color;
+    private String uniqueID;
 
     private BufferedImage imgTransicionRight[];
     private BufferedImage imgTransicionLeft[];
@@ -87,7 +88,6 @@ public class Personaje implements Runnable {
 
                 } else {
                     //Es online, es online
-                    
                 }
 
                 Thread.sleep(timeRefresh);
@@ -213,6 +213,10 @@ public class Personaje implements Runnable {
     public boolean isMuerto() {
         return muerto;
     }
+    
+    public void setMuerto(boolean muerto){
+        this.muerto = muerto;
+    }
 
     public void setBuffMovimiento(double buffMovimiento) {
         this.buffMovimiento = buffMovimiento;
@@ -231,6 +235,28 @@ public class Personaje implements Runnable {
         return new Point((int) x, (int) y);
     }
 
+    public String getUniqueID() {
+        return uniqueID;
+    }
+
+    public void setUniqueID(String uniqueID) {
+        this.uniqueID = uniqueID;
+    }       
+
+    public boolean isEsJugadorOnline() {
+        return esJugadorOnline;
+    }
+
+    public void setEsJugadorOnline(boolean esJugadorOnline) {
+        this.esJugadorOnline = esJugadorOnline;
+    }
+    
+    public String getInfo() {
+        return uniqueID+","+this.x+","+this.y+","+jumping+","+muerto;
+    }
+
+    
+    
     private void moverPersonaje() {
         try {
             if (!muerto) {
@@ -247,6 +273,7 @@ public class Personaje implements Runnable {
             }
         } catch (Exception e) {
             System.out.println(e.toString());
+            e.printStackTrace();
         }
     }
 
@@ -279,6 +306,7 @@ public class Personaje implements Runnable {
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
