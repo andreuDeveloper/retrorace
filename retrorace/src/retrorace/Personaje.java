@@ -41,11 +41,13 @@ public class Personaje implements Runnable {
     private boolean estaMoviendo = true;
     private Point lastCheckPoint;
     private String lastDirection = "Right";
+    private boolean esJugadorOnline = false;
     private Partida partida;
     private int timeRefresh = 30;
     private boolean enMeta;
     private Timer animacion;
     private String color;
+    private String uniqueID;
 
     private BufferedImage imgTransicionRight[];
     private BufferedImage imgTransicionLeft[];
@@ -70,17 +72,22 @@ public class Personaje implements Runnable {
 
         while (partida.isActiva()) {
             try {
-                moverPersonaje();
-                if (enMeta) {
-                    saltar(this.fuerzaSalto);
+                if (!esJugadorOnline) {
+                    moverPersonaje();
+                    if (enMeta) {
+                        saltar(this.fuerzaSalto);
+                    } else {
+                        if (!muerto) {
+                            y += velY;
+                        }
+                        if (falling || jumping) {
+                            velY += this.partida.getGravedad();
+                            //max vel
+                        }
+                    }
+
                 } else {
-                    if (!muerto) {
-                        y += velY;
-                    }
-                    if (falling || jumping) {
-                        velY += this.partida.getGravedad();
-                        //max vel
-                    }
+                    //Es online, es online
                 }
 
                 Thread.sleep(timeRefresh);
@@ -206,6 +213,10 @@ public class Personaje implements Runnable {
     public boolean isMuerto() {
         return muerto;
     }
+    
+    public void setMuerto(boolean muerto){
+        this.muerto = muerto;
+    }
 
     public void setBuffMovimiento(double buffMovimiento) {
         this.buffMovimiento = buffMovimiento;
@@ -224,47 +235,79 @@ public class Personaje implements Runnable {
         return new Point((int) x, (int) y);
     }
 
+    public String getUniqueID() {
+        return uniqueID;
+    }
+
+    public void setUniqueID(String uniqueID) {
+        this.uniqueID = uniqueID;
+    }       
+
+    public boolean isEsJugadorOnline() {
+        return esJugadorOnline;
+    }
+
+    public void setEsJugadorOnline(boolean esJugadorOnline) {
+        this.esJugadorOnline = esJugadorOnline;
+    }
+    
+    public String getInfo() {
+        return uniqueID+","+this.x+","+this.y+","+jumping+","+muerto;
+    }
+
+    
+    
     private void moverPersonaje() {
-        if (!muerto) {
-            if (this.movingLeft) {
-                lastDirection = "Left";
-                moverIzquerda();
+        try {
+            if (!muerto) {
+                if (this.movingLeft) {
+                    lastDirection = "Left";
+                    moverIzquerda();
+                }
+                if (this.movingRight) {
+                    lastDirection = "Right";
+                    moverDerecha();
+                }
+                partida.comprobarPies(this);
+                partida.commprobarSuelo(this);
             }
-            if (this.movingRight) {
-                lastDirection = "Right";
-                moverDerecha();
-            }
-            partida.comprobarPies(this);
-            partida.commprobarSuelo(this);
-            
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            e.printStackTrace();
         }
     }
 
     public void pintar(Graphics g) {
-        BufferedImage img = imgTransicionRight[0];
+        try {
+            BufferedImage img = imgTransicionRight[0];
 
-        if (muerto) {
-            img = imgMuerto;
-        } else if (jumping) {
-            img = imgSaltar;
-        } else if (estaMoviendo) {
-            if (lastDirection.equals("Left")) {
-                img = imgTransicionLeft[this.animacion.getContador() % imgTransicionLeft.length];
-            } else {
-                img = imgTransicionRight[this.animacion.getContador() % imgTransicionRight.length];
+            if (muerto) {
+                img = imgMuerto;
+            } else if (jumping) {
+                img = imgSaltar;
+            } else if (estaMoviendo) {
+                if (lastDirection.equals("Left")) {
+                    img = imgTransicionLeft[this.animacion.getContador() % imgTransicionLeft.length];
+                } else {
+                    img = imgTransicionRight[this.animacion.getContador() % imgTransicionRight.length];
+                }
+            } else { //Parado
+                if (lastDirection.equals("Left")) {
+                    img = imgTransicionLeft[0];
+                } else {
+                    img = imgTransicionRight[0];
+                }
             }
-        } else { //Parado
-            if (lastDirection.equals("Left")) {
-                img = imgTransicionLeft[0];
-            } else {
-                img = imgTransicionRight[0];
-            }
+
+            g.drawImage(img, (int) x, (int) y, null);
+
+            this.alto = img.getHeight();
+            this.ancho = img.getWidth();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
-
-        this.alto = img.getHeight();
-        this.ancho = img.getWidth();
-
-        g.drawImage(img, (int) x, (int) y, null);
     }
 
     public void moverIzquerda() {

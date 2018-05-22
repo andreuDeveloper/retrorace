@@ -21,6 +21,7 @@ public class Partida implements Runnable {
     private String tipoPartida = "";
     private final double gravedad = 1;
     private Mapa mapa;
+    private Server server = null;
     private Timer tiempo;
     private final String colores[] = {"Blue", "Green", "White", "White"};
 
@@ -45,14 +46,24 @@ public class Partida implements Runnable {
     public void run() {
         iniciarPartida();
         while (activa) {
+            if (tipoPartida.equals("Online")) {
+                //El player 0 es el local, enviamos su info
+                if (server != null && this.personajes.get(0).getUniqueID().length()>0){
+                    this.server.sendMessage(this.personajes.get(0).getInfo());
+                }
+            }
 
             try {
-                Thread.sleep(50);
+                Thread.sleep(100);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         this.tiempo.end();
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
     }
 
     public int getTiempoPartida() {
@@ -154,16 +165,16 @@ public class Partida implements Runnable {
         String propiedadPiesIzq = this.mapa.getCasilla(xIzquierda, yPies).getPropiedad();
 
         switch (propiedadPiesIzq) {
-                case "intransitable":
-                    return false;
-                case "sostenedor":
-                    return false;
-                case "trampolin":
-                    return false;
-                default:
-                    return true;
+            case "intransitable":
+                return false;
+            case "sostenedor":
+                return false;
+            case "trampolin":
+                return false;
+            default:
+                return true;
 
-            }
+        }
     }
 
     public boolean puedeMoverDerecha(Personaje personaje) {
@@ -191,7 +202,6 @@ public class Partida implements Runnable {
 
             }
 
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
@@ -205,7 +215,6 @@ public class Partida implements Runnable {
         int ySuelo = ((int) personaje.getY() + (int) personaje.getAlto() + 10) / anchoCasillas;
 
         String propiedad = this.mapa.getCasilla(xCentral, ySuelo).getPropiedad();
-        System.out.println(propiedad);
         switch (propiedad) {
             case "checkpointOff":
                 personaje.setLastCheckPoint((xCentral) * anchoCasillas, (int) personaje.getY());
