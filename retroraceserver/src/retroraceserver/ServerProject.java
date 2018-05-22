@@ -10,6 +10,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,7 +25,7 @@ public class ServerProject {
     private int myPORT;
     private ServerMT serverMT;
 
-    private final ArrayList<Client> players;
+    private final ArrayList<Client> clients;
 
     /**
      * Just the constructor, initialize the server and clients list
@@ -32,7 +34,7 @@ public class ServerProject {
      */
     public ServerProject(ServerFrame serverFrame) {
         this.serverFrame = serverFrame;
-        this.players = new ArrayList<>();
+        this.clients = new ArrayList<>();
 
     }
 
@@ -50,6 +52,8 @@ public class ServerProject {
         this.serverMT.start();
     }
 
+
+
     /**
      * Add a new client to the list using the socket
      *
@@ -57,23 +61,11 @@ public class ServerProject {
      */
     public synchronized void addClient(Socket sock) {
         Client c = new Client(this, sock);
-        this.players.add(c);
+        this.clients.add(c);
         new Thread(c).start();
 
         System.out.println("ServerProject trying to add client");
         addMessageToLog("Added a client");
-    }
-
-    public synchronized void sendAllPlayers() {
-        String msg = "$ALL-PLAYERS$";
-        for (int i = 0; i < this.players.size(); i++) {
-            msg += "," + this.players.get(i).getUniqueID();
-        }
-
-        for (int i = 0; i < this.players.size(); i++) {
-            // debe hacer if / else --> !cliente
-            players.get(i).sendMessage(msg);
-        }
     }
 
     /**
@@ -82,11 +74,12 @@ public class ServerProject {
      * @param c Client to remove
      */
     public synchronized void removeClient(Client c) {
-        this.players.remove(c);
+        this.clients.remove(c);
 
         System.out.println("Removed client");
         addMessageToLog("Client removed");
     }
+
 
     /**
      * Hace un broadcaset del mensaje excepto al cliente c y al otro server
@@ -96,13 +89,13 @@ public class ServerProject {
      */
     public synchronized void doBroadcastMsgFromClient(Client c, String msg) {
         //Broadcast to all the clients except the Client c
-        System.out.println("Broadcasting msg.. to " + (players.size() - 1));
-        addMessageToLog("Broadcasting msg.. to " + (players.size() - 1));
+        System.out.println("Broadcasting msg.. to " + (clients.size() - 1));
+        addMessageToLog("Broadcasting msg.. to " + (clients.size() - 1));
 
-        for (int i = 0; i < this.players.size(); i++) {
+        for (int i = 0; i < this.clients.size(); i++) {
             // debe hacer if / else --> !cliente
-            if (!c.equals(players.get(i))) {
-                players.get(i).sendMessage(msg);
+            if (!c.equals(clients.get(i))) {
+                clients.get(i).sendMessage(msg);
             }
         }
     }
@@ -132,13 +125,15 @@ public class ServerProject {
         }
     }
 
+
+
     /**
      * Return our number of clients linked to our server
      *
      * @return Number of clients
      */
     public int getNumberOfClients() {
-        return this.players.size();
+        return this.clients.size();
     }
 
     /**

@@ -76,7 +76,7 @@ public class ServerMT extends Thread {
             String line = in.readLine().toUpperCase();
             System.out.println("LINE DETECTED: "+ line);
             switch (line) {
-                case "$PLAYER-RETRORACE$": //Client
+                case "$CLIENT-RETRORACE$": //Client
                     System.out.println("Adding new client");
                     this.sp.addClient(this.socket);
                     break;
