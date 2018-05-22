@@ -114,8 +114,7 @@ public class Mapa {
                         Logger.getLogger(Mapa.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     for (int row = 0; row <= 26; row++) {
-                        for (int col = 0; col <= 47; col++) {
-                            
+                        for (int col = 0; col <= 47; col++) {                            
                             switch (distribucion[row][col]) {
                                 case 5:
                                     distribucion[row][col] = 10;

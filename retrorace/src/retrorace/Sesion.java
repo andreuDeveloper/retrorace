@@ -58,6 +58,13 @@ public class Sesion {
         partida = new Partida(mapas.get(numMap));
         if(tipoPartida.equals("Duo")){
             partida.addPersonaje();
+        } else {            
+            //partida.setTipoPartida("Online");
+            tipoPartida = "Online";
+            ClientProject cp = new ClientProject();
+            cp.setPartida(partida);            
+            cp.createConnection(username, numMap);
+            
         }
         
         partida.setTipoPartida(tipoPartida);
