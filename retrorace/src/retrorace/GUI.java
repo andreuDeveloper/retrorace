@@ -78,11 +78,13 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     private ArrayList<JButton> btnMap;
     private String tipoPartida;
 
-    /*Ranking panel*/
+    /*RankingGUI panel*/
     private JToggleButton btnMyRanking;
     private JToggleButton btnGlobalRanking;
     private ArrayList<JToggleButton> btnMapRanking;
     private ButtonGroup btnGroupMapsRanking;
+    private RankingGUI ranking;
+    private JLabel lblErrorRanking;
 
     /*CONSTRUCTOR*/
     public GUI(Juego j) {
@@ -562,15 +564,29 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
         panelTop.add(panelMapsRanking, c);
 
+        lblErrorRanking = new JLabel("");
+        lblErrorRanking.setFont(new Font("Arial", 0, 12));
+        lblErrorRanking.setForeground(Color.RED);
+
+        c.gridy = 2;
+        c.ipady = 10;
+
+        c.fill = GridBagConstraints.CENTER;
+
+        panelTop.add(lblErrorRanking, c);
         panelRanking.add(panelTop, BorderLayout.NORTH);
 
+        ranking = new RankingGUI(juego.getDbManager(), sesion.getUsername());
+        panelRanking.add(ranking, BorderLayout.CENTER);
+
+        
         return panelRanking;
     }
 
     private void initRegister() {
         panelLogin.setVisible(false);
         if (panelRegister == null) {
-            this.getContentPane().add(createComponentRegister(), BorderLayout.CENTER);
+            this.getContentPane() .add(createComponentRegister(), BorderLayout.CENTER);
         } else {
             panelRegister.setVisible(true);
         }
@@ -711,6 +727,51 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         }
     }
 
+    private void blockRankingPanel(boolean state) {
+
+        btnMyRanking.setEnabled(!state);
+        btnGlobalRanking.setEnabled(!state);
+        for (JToggleButton btnAuxMap : btnMapRanking) {
+            btnAuxMap.setEnabled(!state);
+        }
+        lblErrorRanking.setText("");
+
+    }
+
+    private void getPersonalRankingInMap(int idMap) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (juego.checkConnectionDB()) {
+                    ranking.getPersonalRankingInMap(idMap);
+                    ranking.setVisible(true);
+                } else {
+                    lblErrorRanking.setText("ERROR: Error de conexión. Intentalo más tarde.");
+                }
+                blockRankingPanel(false);
+            }
+        }
+        );
+        t.start();
+    }
+
+    private void getGlobalRankingInMap(int idMap) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (juego.checkConnectionDB()) {
+                    ranking.getGlobalRankingInMap(idMap);
+                    ranking.setVisible(true);
+                } else {
+                    lblErrorRanking.setText("ERROR: Error de conexión. Intentalo más tarde.");
+                }
+                blockRankingPanel(false);
+            }
+        }
+        );
+        t.start();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().getClass() == btnExit.getClass()) {
@@ -771,17 +832,36 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
                     panelMenu.setVisible(true);
                     panelRanking.setVisible(false);
                     blockBtnMapsRanking(true);
+                    lblErrorRanking.setText("");
+
                 }
             }
         } else if (e.getSource().getClass() == btnMyRanking.getClass()) {
             JToggleButton btnAux = (JToggleButton) e.getSource();
 
             if (panelRanking.isVisible()) {
+                lblErrorRanking.setText("");
                 if (!btnMapRanking.get(0).isEnabled()) {
                     blockBtnMapsRanking(false);
                 }
                 if (btnAux == btnMyRanking || btnAux == btnGlobalRanking) {
                     btnGroupMapsRanking.clearSelection();
+                    ranking.setVisible(false);
+
+
+                } else {
+                    blockRankingPanel(true);
+                    for (JToggleButton btnAuxMap : btnMapRanking) {
+                        if (btnAuxMap == btnAux) {
+                            System.out.println(btnMapRanking.indexOf(btnAuxMap));
+                            if (btnMyRanking.isSelected()) {
+                                this.getPersonalRankingInMap(btnMapRanking.indexOf(btnAuxMap));
+                            } else {
+                                this.getGlobalRankingInMap(btnMapRanking.indexOf(btnAuxMap));
+
+                            }
+                        }
+                    }
                 }
             }
         }
