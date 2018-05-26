@@ -61,7 +61,7 @@ public class Sesion {
             partida.addPersonaje();
         } else {            
             //partida.setTipoPartida("Online");
-            tipoPartida = "Online";
+            tipoPartida = "Single";
             ClientProject cp = new ClientProject();
             cp.setPartida(partida);            
             cp.createConnection(username, numMap);
@@ -69,6 +69,7 @@ public class Sesion {
         }
         
         partida.setTipoPartida(tipoPartida);
+        partida.setSesion(this);
         new Thread(partida).start();
         return partida;
     }
@@ -78,6 +79,10 @@ public class Sesion {
         this.partida.getMapa().pararAnimacion();
         this.partida.getMapa().recargarDistribucion();      
         
+    }
+
+    void saveRecord(Mapa mapa, int contador) {
+        System.out.println("Puntuacion guardada"+ mapa.getNombre()+" - "+contador);
     }
     
     

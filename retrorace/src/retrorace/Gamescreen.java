@@ -44,7 +44,9 @@ public class Gamescreen extends Canvas implements Runnable, KeyListener {
 
     @Override
     public void run() {
-        while (partida.isActiva()) {
+        System.out.println("PARTIDA RUN");
+        this.partida.setActiva(true);
+        while (this.partida.isActiva()) {
             preDraw();
         }
     }
