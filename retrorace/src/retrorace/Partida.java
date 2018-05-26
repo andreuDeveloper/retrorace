@@ -9,6 +9,17 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.applet.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+
 
 /**
  *
@@ -24,6 +35,8 @@ public class Partida implements Runnable {
     private Server server = null;
     private Timer tiempo;
     private final String colores[] = {"Blue", "Green", "White", "White"};
+    //Music
+    private Clip audioClip;
 
     public Partida(Mapa mapa) {
         this.personajes = new ArrayList<Personaje>();
@@ -34,6 +47,26 @@ public class Partida implements Runnable {
     }
 
     private void iniciarPartida() {
+        //Init music
+        try {
+            File audioFile = new File("music/track1.wav");
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+ 
+            AudioFormat format = audioStream.getFormat();
+ 
+            DataLine.Info info = new DataLine.Info(Clip.class, format);
+ 
+            audioClip = (Clip) AudioSystem.getLine(info);
+ 
+            audioClip.open(audioStream);
+             
+            audioClip.start();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
         this.activa = true;
         for (int i = 0; i < this.personajes.size(); i++) {
             this.personajes.get(i).setColor(colores[i]);
@@ -48,18 +81,22 @@ public class Partida implements Runnable {
         iniciarPartida();
         while (activa) {
             try {
-            if (tipoPartida.equals("Online")) {
-                //El player 0 es el local, enviamos su info
-                if (server != null) {
-                    this.server.sendMessage(this.personajes.get(0).getInfo());
+                if (tipoPartida.equals("Online")) {
+                    //El player 0 es el local, enviamos su info
+                    if (server != null) {
+                        this.server.sendMessage(this.personajes.get(0).getInfo());
+                    }
                 }
-            }
+                audioClip.loop(Clip.LOOP_CONTINUOUSLY);
+                Thread.sleep(50);
+                
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
         this.tiempo.end();
-
+        this.audioClip.stop();
+        this.audioClip = null;
     }
 
     public void setServer(Server server) {
