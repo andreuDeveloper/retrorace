@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.GraphicsDevice;
@@ -47,6 +48,8 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     private JPanel panelMapChoice;
     private JPanel panelGamescreen;
     private JPanel panelRanking;
+    private JPanel panelChoiceServerMultiplayer;
+    private JPanel panelWaitingRoom;
 
     private JButton btnExit;
     private JButton btnBack;
@@ -86,6 +89,11 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     private RankingGUI ranking;
     private JLabel lblErrorRanking;
 
+    /*Choice Server Multiplayer Panel*/
+    private JTextField txtIP;
+    private JTextField txtPort;
+    private JButton btnConnectServer;
+
     /*CONSTRUCTOR*/
     public GUI(Juego j) {
 
@@ -110,7 +118,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         } else {
             System.err.println("Full screen not supported");
         }
-        
+
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.addUIComponents(getContentPane());
@@ -266,20 +274,103 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
         panelLogin.add(lblLoaderLogin, c);
 
-        /*c.gridx = 0;
-        c.gridy = 5;
-        c.gridwidth = 1;
-        c.ipady=10;
-        c.weightx=0.4d;
-        
-        panelLogin.add(btnLogin, c);
-        
-        
-        c.gridx = 1;
-        c.gridy = 5;
-   
-        panelLogin.add(btnRegister, c);*/
         return panelLogin;
+    }
+
+    private JPanel createComponentChoiceServer() {
+        panelChoiceServerMultiplayer = new JPanel();
+        int margin = 2 * this.getWidth() / 5;
+        panelChoiceServerMultiplayer.setBorder(BorderFactory.createEmptyBorder(0, margin, 0, margin));
+        panelChoiceServerMultiplayer.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.insets = new Insets(5, 5, 5, 5);
+
+        JLabel lblServer = new JLabel("Escoge el servidor");
+        lblServer.setFont(new Font("Arial Black", 0, 28));
+        lblServer.setForeground(Color.BLUE);
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 2;
+        c.ipady = 35;
+
+        c.fill = GridBagConstraints.CENTER;
+        panelChoiceServerMultiplayer.add(lblServer, c);
+
+        JLabel lblIP = new JLabel("IP Servidor");
+
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 2;
+        c.ipady = 10;
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panelChoiceServerMultiplayer.add(lblIP, c);
+
+        txtIP = new JTextField();
+        txtIP.addKeyListener(this);
+
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.BOTH;
+        panelChoiceServerMultiplayer.add(txtIP, c);
+
+        JLabel lblPort = new JLabel("Puerto Servidor");
+
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panelChoiceServerMultiplayer.add(lblPort, c);
+
+        txtPort = new JTextField();
+        txtPort.addKeyListener(this);
+
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.BOTH;
+        panelChoiceServerMultiplayer.add(txtPort, c);
+
+        btnConnectServer = new JButton("Conectarse");
+        btnConnectServer.addActionListener(this);
+
+        c.gridx = 0;
+        c.gridy = 5;
+        c.gridwidth = 2;
+
+        c.weightx = 1.0d;
+
+        panelChoiceServerMultiplayer.add(btnConnectServer, c);
+
+        /*
+        lblErrorLogin = new JLabel("");
+        lblErrorLogin.setFont(new Font("Arial", 0, 12));
+        lblErrorLogin.setForeground(Color.RED);
+
+        c.gridx = 0;
+        c.gridy = 6;
+        c.gridwidth = 2;
+
+        c.fill = GridBagConstraints.CENTER;
+
+        panelLogin.add(lblErrorLogin, c);
+
+        c.gridy = 7;
+
+        Icon icon = new ImageIcon("img/gui/loader.gif");
+        lblLoaderLogin = new JLabel(icon);
+        lblLoaderLogin.setVisible(false);
+
+        panelLogin.add(lblLoaderLogin, c);
+
+         */
+        return panelChoiceServerMultiplayer;
     }
 
     private JPanel createComponentMapChoice() {
@@ -364,7 +455,6 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
         btnMultiPlayer = new JButton("Multijugador online");
         btnMultiPlayer.addActionListener(this);
-        btnMultiPlayer.setEnabled(false);
 
         btnRanking = new JButton("Ranking");
         btnRanking.addActionListener(this);
@@ -577,19 +667,19 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         panelTop.add(lblErrorRanking, c);
         panelRanking.add(panelTop, BorderLayout.NORTH);
 
-        if(ranking==null){
+        if (ranking == null) {
             ranking = new RankingGUI(juego.getDbManager(), sesion.getUsername());
         }
         panelRanking.add(ranking, BorderLayout.CENTER);
-ranking.setVisible(false);
-        
+        ranking.setVisible(false);
+
         return panelRanking;
     }
 
     private void initRegister() {
         panelLogin.setVisible(false);
         if (panelRegister == null) {
-            this.getContentPane() .add(createComponentRegister(), BorderLayout.CENTER);
+            this.getContentPane().add(createComponentRegister(), BorderLayout.CENTER);
         } else {
             panelRegister.setVisible(true);
         }
@@ -636,6 +726,16 @@ ranking.setVisible(false);
 
     }
 
+    private void initChoiceServerMultiplayer() {
+        panelMenu.setVisible(false);
+        btnBack.setVisible(true);
+        if (panelChoiceServerMultiplayer == null) {
+            this.getContentPane().add(createComponentChoiceServer(), BorderLayout.CENTER);
+        } else {
+            panelChoiceServerMultiplayer.setVisible(true);
+        }
+    }
+
     private void initPartida(int numMap) {
         panelMapChoice.setVisible(false);
         if (panelGamescreen == null) {
@@ -653,6 +753,31 @@ ranking.setVisible(false);
         this.gamescreen.requestFocus();
     }
 
+    private void initPartidaOnline() {
+        panelChoiceServerMultiplayer.setVisible(false);
+        String host = txtIP.getText();
+        int port = Integer.parseInt(txtPort.getText());
+        if (panelGamescreen == null) {
+            gamescreen = new Gamescreen(this, sesion.initPartidaOnline(host, port));
+            this.getContentPane().add(createComponentGamescreen(), BorderLayout.CENTER);
+            gamescreen.setSize(getWidth(), getHeight() - btnExit.getHeight() - 2 * btnExit.getY());
+//            gamescreen.setSize(1280, 700);
+        } else {
+            panelGamescreen.setVisible(true);
+            gamescreen.setPartida(sesion.initPartidaOnline(host, port));
+        }
+
+        new Thread(this.gamescreen).start();
+        this.gamescreen.setBackground(new Color(208, 244, 247));
+        this.gamescreen.requestFocus();
+    }
+
+//    private void connectServer() {
+//        //CHECK ERRORES
+//        String host = txtIP.getText();
+//        int port = Integer.parseInt(txtPort.getText());
+//        sesion.connectServer(host, port);
+//    }
     private void initRanking() {
         panelMenu.setVisible(false);
         btnBack.setVisible(true);
@@ -776,12 +901,12 @@ ranking.setVisible(false);
     }
 
     public void saveRecord(int idMap, int time) {
-        if(ranking==null){
+        if (ranking == null) {
             ranking = new RankingGUI(juego.getDbManager(), sesion.getUsername());
         }
         ranking.saveRecord(idMap, time);
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().getClass() == btnExit.getClass()) {
@@ -816,6 +941,9 @@ ranking.setVisible(false);
                 } else if (btnAux == btnDuoPlayer) {
                     initMapChoice();
                     tipoPartida = "Duo";
+                } else if (btnAux == btnMultiPlayer) {
+                    tipoPartida = "Online";
+                    initChoiceServerMultiplayer();
                 } else if (btnAux == btnRanking) {
                     initRanking();
                 }
@@ -837,6 +965,10 @@ ranking.setVisible(false);
                     sesion.endPartida();
                     panelMapChoice.setVisible(true);
                     panelGamescreen.setVisible(false);
+                }
+            } else if (panelChoiceServerMultiplayer != null && panelChoiceServerMultiplayer.isVisible()) {
+                if (btnAux == btnConnectServer) {
+                    initPartidaOnline();
                 }
             } else if (panelRanking.isVisible()) {
                 if (btnAux == btnBack) {
@@ -883,7 +1015,7 @@ ranking.setVisible(false);
                     || txtPassword.hasFocus() && txtPassword.getText().length() >= 14) {
                 ke.consume();
             }
-        } else if (panelRegister.isVisible()) {
+        } else if (panelRegister != null && panelRegister.isVisible()) {
             if (txtRegisterUsername.hasFocus() && txtRegisterUsername.getText().length() >= 16
                     || txtRegisterPassword.hasFocus() && txtRegisterPassword.getText().length() >= 14
                     || txtRegisterPassword2.hasFocus() && txtRegisterPassword2.getText().length() >= 14) {

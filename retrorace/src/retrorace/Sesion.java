@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTextField;
 
 /**
  *
@@ -73,6 +74,29 @@ public class Sesion {
         return partida;
     }
     
+//    public void connectServer(String host, int port) {
+//        ClientProject cp = new ClientProject();         
+//        cp.createConnection(host, port); 
+//    }
+    
+     public Partida initPartidaOnline(String host, int port){
+         if (mapas.size()==0) {
+             loadMaps();
+         }
+        partida = new Partida(mapas.get(0));
+        this.partida.setActiva(true);
+        
+            ClientProject cp = new ClientProject();
+            cp.setPartida(partida);            
+            cp.createConnection(host,port);  
+
+        
+        partida.setTipoPartida("Online");
+        partida.setSesion(this);
+        new Thread(partida).start();
+        return partida;
+    }
+    
     public void endPartida(){
         this.partida.setActiva(false);
         this.partida.getMapa().pararAnimacion();
@@ -83,6 +107,7 @@ public class Sesion {
     void saveRecord(Mapa mapa, int contador) {
         gui.saveRecord(mapas.indexOf(mapa), contador);
     }
+
     
     
     

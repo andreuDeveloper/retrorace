@@ -37,10 +37,10 @@ public class ClientProject {
     public void createConnection(String host, int port) {
         this.host = host;
         this.port = port;
-        //this.outServer.setHOST(host);
-       this.outServer.setHOST("localhost");
-        //this.outServer.setPORT(port);
-        this.outServer.setPORT(8888);
+        this.outServer.setHOST(host);
+       //this.outServer.setHOST("localhost");
+        this.outServer.setPORT(port);
+        //this.outServer.setPORT(8888);
         this.outServer.start();
     }
 
