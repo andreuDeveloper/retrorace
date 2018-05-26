@@ -19,6 +19,11 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import javax.swing.ImageIcon;
 
 /**
@@ -54,6 +59,9 @@ public class Personaje implements Runnable {
     private BufferedImage imgSaltar;
     private BufferedImage imgMuerto;
 
+    private Clip jumpSound;
+
+    //audioClip.start();
     public Personaje(Partida partida) {
         this.x = 5;
         this.y = 0;
@@ -64,6 +72,7 @@ public class Personaje implements Runnable {
         this.color = "White";
         this.lastCheckPoint = null;
         initImagenes();
+        initSounds();
     }
 
     @Override
@@ -77,7 +86,7 @@ public class Personaje implements Runnable {
                     if (enMeta) {
                         partida.setActiva(false);
                         saltar(this.fuerzaSalto);
-                        Thread.sleep(1000);                        
+                        Thread.sleep(1000);
                     } else {
                         if (!muerto) {
                             y += velY;
@@ -148,6 +157,7 @@ public class Personaje implements Runnable {
             velY = 0;
             falling = false;
             jumping = false;
+            this.jumpSound.stop();
         } else {
             falling = true;
         }
@@ -327,6 +337,7 @@ public class Personaje implements Runnable {
             velY = -fuerza;
             this.y = y + velY;
             jumping = true;
+            this.jumpSound.start();
         }
     }
 
@@ -378,6 +389,19 @@ public class Personaje implements Runnable {
             System.out.println(e.getMessage());
         }
         System.out.println("REAED ALL SUCCESSFULLY");
+    }
+
+    private void initSounds() {
+        try {
+            File audioFile = new File("music/jump.wav");
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+            AudioFormat format = audioStream.getFormat();
+            DataLine.Info info = new DataLine.Info(Clip.class, format);
+            this.jumpSound = (Clip) AudioSystem.getLine(info);
+            this.jumpSound.open(audioStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
