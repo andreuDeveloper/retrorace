@@ -28,6 +28,10 @@ public class Juego {
         dbManager = new DBManager();
     }
 
+    public DBManager getDbManager() {
+        return dbManager;
+    }
+
     void initSesion(String username) {
         this.sesion=new Sesion(this.gui,username);
     }
