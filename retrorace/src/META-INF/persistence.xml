@@ -3,6 +3,7 @@
   <persistence-unit name="retroracePU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>entities.Users</class>
+    <class>entities.Ranking</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://35.205.93.35:3306/my_retrorace?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="root"/>

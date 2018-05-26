@@ -10,22 +10,19 @@ import java.awt.event.KeyListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -35,6 +32,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 
 public class GUI extends JFrame implements ActionListener, KeyListener {
 
@@ -80,11 +78,14 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     private ArrayList<JButton> btnMap;
     private String tipoPartida;
 
-    /*Ranking panel*/
-    private JButton btnMyRanking;
-    private JButton btnGlobalRanking;
-    private ArrayList<JButton> btnMapRanking;
-    
+    /*RankingGUI panel*/
+    private JToggleButton btnMyRanking;
+    private JToggleButton btnGlobalRanking;
+    private ArrayList<JToggleButton> btnMapRanking;
+    private ButtonGroup btnGroupMapsRanking;
+    private RankingGUI ranking;
+    private JLabel lblErrorRanking;
+
     /*CONSTRUCTOR*/
     public GUI(Juego j) {
 
@@ -310,10 +311,15 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         JPanel panelAuxMaps = new JPanel(new GridLayout(sesion.getMapas().size(), 1, 5, 15));
 
         for (Mapa m : sesion.getMapas()) {
-            btnMap.add(new JButton(m.getNombre()));
+            m.iniciarMapa();
+            Image image = m.getImage(); // transform it 
+            Image newimg = image.getScaledInstance(480, 270, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
+            btnMap.add(new JButton(m.getNombre(), new ImageIcon(newimg)));
         }
 
         for (JButton btnAux : btnMap) {
+            btnAux.setHorizontalTextPosition(JButton.CENTER);
+            btnAux.setVerticalTextPosition(JButton.TOP);
             panelAuxMaps.add(btnAux);
             btnAux.addActionListener(this);
         }
@@ -321,7 +327,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         c.gridx = 0;
         c.gridy = 1;
         c.ipady = 15;
-        c.weightx = 1.0d;
+        //c.weightx = 1.0d;
         c.fill = GridBagConstraints.BOTH;
 
         panelMapChoice.add(panelAuxMaps, c);
@@ -499,44 +505,89 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         return panelRegister;
     }
 
-    private JPanel createComponentRanking(){
-        panelRanking=new JPanel();
-        int margin = this.getWidth() / 5;
+    private JPanel createComponentRanking() {
+        panelRanking = new JPanel();
+        int margin = this.getWidth() / 3;
         panelRanking.setBorder(BorderFactory.createEmptyBorder(0, margin, 0, margin));
         panelRanking.setLayout(new BorderLayout());
-        
+
         JPanel panelTop = new JPanel();
         panelTop.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-        
-        btnMyRanking = new JButton("MI RANKING");
+
+        c.insets = new Insets(5, 5, 5, 5);
+
+        ButtonGroup btnGroupRanking = new ButtonGroup();
+        btnMyRanking = new JToggleButton("MI RANKING");
         btnMyRanking.addActionListener(this);
-        btnGlobalRanking = new JButton("RANKING MUNDIAL");
+        btnGlobalRanking = new JToggleButton("RANKING MUNDIAL");
         btnGlobalRanking.addActionListener(this);
-        
+
+        btnGroupRanking.add(btnMyRanking);
+        btnGroupRanking.add(btnGlobalRanking);
+
         JPanel panelChoiceRanking = new JPanel();
-        panelChoiceRanking.setLayout(new GridLayout(1,2,10,10));
-        
+        panelChoiceRanking.setLayout(new GridLayout(1, 2, 10, 10));
+
         panelChoiceRanking.add(btnMyRanking);
         panelChoiceRanking.add(btnGlobalRanking);
-        
+
         c.gridx = 0;
         c.gridy = 0;
         c.ipady = 20;
-        c.weightx=1.0d;
+        c.weightx = 1.0d;
         c.fill = GridBagConstraints.BOTH;
-        
-        panelTop.add(panelChoiceRanking, c);
-        
-        panelRanking.add(panelTop,BorderLayout.NORTH);
 
+        panelTop.add(panelChoiceRanking, c);
+
+        sesion.loadMaps();
+        btnMapRanking = new ArrayList();
+
+        JPanel panelMapsRanking = new JPanel();
+        panelMapsRanking.setLayout(new GridLayout(1, sesion.getMapas().size(), 10, 10));
+        btnGroupMapsRanking = new ButtonGroup();
+        for (Mapa m : sesion.getMapas()) {
+            btnMapRanking.add(new JToggleButton(m.getNombre()));
+
+        }
+        for (JToggleButton btnAux : btnMapRanking) {
+            panelMapsRanking.add(btnAux);
+            btnGroupMapsRanking.add(btnAux);
+            btnAux.setEnabled(false);
+            btnAux.addActionListener(this);
+        }
+
+        c.gridy = 1;
+        c.ipady = 10;
+        c.weightx = 1.0d;
+
+        c.fill = GridBagConstraints.BOTH;
+
+        panelTop.add(panelMapsRanking, c);
+
+        lblErrorRanking = new JLabel("");
+        lblErrorRanking.setFont(new Font("Arial", 0, 12));
+        lblErrorRanking.setForeground(Color.RED);
+
+        c.gridy = 2;
+        c.ipady = 10;
+
+        c.fill = GridBagConstraints.CENTER;
+
+        panelTop.add(lblErrorRanking, c);
+        panelRanking.add(panelTop, BorderLayout.NORTH);
+
+        ranking = new RankingGUI(juego.getDbManager(), sesion.getUsername());
+        panelRanking.add(ranking, BorderLayout.CENTER);
+
+        
         return panelRanking;
     }
-    
+
     private void initRegister() {
         panelLogin.setVisible(false);
         if (panelRegister == null) {
-            this.getContentPane().add(createComponentRegister(), BorderLayout.CENTER);
+            this.getContentPane() .add(createComponentRegister(), BorderLayout.CENTER);
         } else {
             panelRegister.setVisible(true);
         }
@@ -545,6 +596,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
     private void initSesion() {
         blockLoginPanel(true);
+        lblErrorLogin.setForeground(Color.RED);
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -599,7 +651,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         this.gamescreen.requestFocus();
     }
 
-    private void initRanking(){
+    private void initRanking() {
         panelMenu.setVisible(false);
         btnBack.setVisible(true);
         if (panelRanking == null) {
@@ -608,7 +660,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
             panelRanking.setVisible(true);
         }
     }
-    
+
     private boolean checkExit() {
         int resp = JOptionPane.showInternalConfirmDialog(this.getContentPane(), "¿Seguro que quieres salir?", "Salir", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
@@ -640,6 +692,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
                         panelRegister.setVisible(false);
                         panelLogin.setVisible(true);
                         lblErrorLogin.setText("Usuario registrado correctamente.");
+                        lblErrorLogin.setForeground(Color.GREEN);
                     }
                 } else {
                     lblErrorRegister.setText("ERROR: Error de conexión. Intentalo más tarde.");
@@ -669,64 +722,148 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         btnRegisterCancel.setEnabled(!state);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        JButton btnAux = (JButton) e.getSource();
+    private void blockBtnMapsRanking(boolean state) {
+        for (JToggleButton btnAux : btnMapRanking) {
+            btnAux.setEnabled(!state);
+        }
+    }
 
-        if (btnAux == btnExit) {
-            if (checkExit()) {
-                System.exit(0);
+    private void blockRankingPanel(boolean state) {
+
+        btnMyRanking.setEnabled(!state);
+        btnGlobalRanking.setEnabled(!state);
+        for (JToggleButton btnAuxMap : btnMapRanking) {
+            btnAuxMap.setEnabled(!state);
+        }
+        lblErrorRanking.setText("");
+
+    }
+
+    private void getPersonalRankingInMap(int idMap) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (juego.checkConnectionDB()) {
+                    ranking.getPersonalRankingInMap(idMap);
+                    ranking.setVisible(true);
+                } else {
+                    lblErrorRanking.setText("ERROR: Error de conexión. Intentalo más tarde.");
+                }
+                blockRankingPanel(false);
             }
         }
+        );
+        t.start();
+    }
 
-        //Acciones en panel login
-        if (panelLogin.isVisible()) {
-            if (btnAux == btnLogin) {
-                initSesion();
-            } else if (btnAux == btnRegister) {
-                initRegister();
+    private void getGlobalRankingInMap(int idMap) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (juego.checkConnectionDB()) {
+                    ranking.getGlobalRankingInMap(idMap);
+                    ranking.setVisible(true);
+                } else {
+                    lblErrorRanking.setText("ERROR: Error de conexión. Intentalo más tarde.");
+                }
+                blockRankingPanel(false);
             }
+        }
+        );
+        t.start();
+    }
 
-        } else if (panelRegister != null && panelRegister.isVisible()) {
-            if (btnAux == btnRegisterComplete) {
-                registerUser();
-            } else if (btnAux == btnRegisterCancel) {
-                panelRegister.setVisible(false);
-                panelLogin.setVisible(true);
-            }
-            //Acciones panel menu
-        } else if (panelMenu.isVisible()) {
-            if (btnAux == btnSinglePlayer) {
-                initMapChoice();
-                tipoPartida = "Single";
-            } else if (btnAux == btnDuoPlayer) {
-                initMapChoice();
-                tipoPartida = "Duo";
-            } else if (btnAux == btnRanking){
-                initRanking();
-            }
-        } else if (panelMapChoice != null && panelMapChoice.isVisible()) {
-            if (btnAux == btnBack) {
-                panelMapChoice.setVisible(false);
-                panelMenu.setVisible(true);
-                btnBack.setVisible(false);
-            }
-            for (JButton btnAuxMap : btnMap) {
-                if (btnAuxMap == btnAux) {
-                    //System.out.println(btnMap.indexOf(btnAuxMap));
-                    initPartida(btnMap.indexOf(btnAuxMap));
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource().getClass() == btnExit.getClass()) {
+            JButton btnAux = (JButton) e.getSource();
+
+            if (btnAux == btnExit) {
+                if (checkExit()) {
+                    System.exit(0);
                 }
             }
-        } else if (panelGamescreen != null &&panelGamescreen.isVisible()) {
-            if (btnAux == btnBack) {
-                sesion.endPartida();
-                panelMapChoice.setVisible(true);
-                panelGamescreen.setVisible(false);
+
+            //Acciones en panel login
+            if (panelLogin.isVisible()) {
+                if (btnAux == btnLogin) {
+                    initSesion();
+                } else if (btnAux == btnRegister) {
+                    initRegister();
+                }
+
+            } else if (panelRegister != null && panelRegister.isVisible()) {
+                if (btnAux == btnRegisterComplete) {
+                    registerUser();
+                } else if (btnAux == btnRegisterCancel) {
+                    panelRegister.setVisible(false);
+                    panelLogin.setVisible(true);
+                }
+                //Acciones panel menu
+            } else if (panelMenu.isVisible()) {
+                if (btnAux == btnSinglePlayer) {
+                    initMapChoice();
+                    tipoPartida = "Single";
+                } else if (btnAux == btnDuoPlayer) {
+                    initMapChoice();
+                    tipoPartida = "Duo";
+                } else if (btnAux == btnRanking) {
+                    initRanking();
+                }
+            } else if (panelMapChoice != null && panelMapChoice.isVisible()) {
+                if (btnAux == btnBack) {
+                    panelMapChoice.setVisible(false);
+                    panelMenu.setVisible(true);
+                    btnBack.setVisible(false);
+                }
+                for (JButton btnAuxMap : btnMap) {
+                    if (btnAuxMap == btnAux) {
+                        //System.out.println(btnMap.indexOf(btnAuxMap));
+                        initPartida(btnMap.indexOf(btnAuxMap));
+                    }
+                }
+            } else if (panelGamescreen != null && panelGamescreen.isVisible()) {
+                if (btnAux == btnBack) {
+                    sesion.endPartida();
+                    panelMapChoice.setVisible(true);
+                    panelGamescreen.setVisible(false);
+                }
+            } else if (panelRanking.isVisible()) {
+                if (btnAux == btnBack) {
+                    panelMenu.setVisible(true);
+                    panelRanking.setVisible(false);
+                    blockBtnMapsRanking(true);
+                    lblErrorRanking.setText("");
+
+                }
             }
-        } else if (panelRanking.isVisible()){
-             if (btnAux == btnBack) {    
-                panelMenu.setVisible(true);
-                panelRanking.setVisible(false);
+        } else if (e.getSource().getClass() == btnMyRanking.getClass()) {
+            JToggleButton btnAux = (JToggleButton) e.getSource();
+
+            if (panelRanking.isVisible()) {
+                lblErrorRanking.setText("");
+                if (!btnMapRanking.get(0).isEnabled()) {
+                    blockBtnMapsRanking(false);
+                }
+                if (btnAux == btnMyRanking || btnAux == btnGlobalRanking) {
+                    btnGroupMapsRanking.clearSelection();
+                    ranking.setVisible(false);
+
+
+                } else {
+                    blockRankingPanel(true);
+                    for (JToggleButton btnAuxMap : btnMapRanking) {
+                        if (btnAuxMap == btnAux) {
+                            System.out.println(btnMapRanking.indexOf(btnAuxMap));
+                            if (btnMyRanking.isSelected()) {
+                                this.getPersonalRankingInMap(btnMapRanking.indexOf(btnAuxMap));
+                            } else {
+                                this.getGlobalRankingInMap(btnMapRanking.indexOf(btnAuxMap));
+
+                            }
+                        }
+                    }
+                }
             }
         }
     }

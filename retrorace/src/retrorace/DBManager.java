@@ -6,8 +6,11 @@
 package retrorace;
 
 import crypt.Hash;
+import entities.Ranking;
+import entities.RankingJpaController;
 import entities.Users;
 import entities.UsersJpaController;
+import java.util.List;
 import javax.persistence.Persistence;
 
 /**
@@ -17,9 +20,11 @@ import javax.persistence.Persistence;
 public class DBManager{
     
     private UsersJpaController ujc;
+    private RankingJpaController rjc;
     
     public DBManager(){
         ujc = new UsersJpaController(Persistence.createEntityManagerFactory("retroracePU"));
+        rjc = new RankingJpaController(Persistence.createEntityManagerFactory("retroracePU"));
     }
     
     boolean checkIfUsernameExists(String username) {
@@ -45,6 +50,18 @@ public class DBManager{
 
     boolean checkCredentials(String username, String password) {
         return (ujc.checkCredentials(username,Hash.sha1(password))>0);
+    }
+    
+    public List<Ranking> getGlobalRankingInMap(int idMap){
+        return rjc.getGlobalRankingInMap(idMap);
+    }
+    
+    public List<Ranking> getPersonalRankingInMap(int idMap, String username){
+        return rjc.getPersonalRankingInMap(idMap, username);
+    }
+
+    void saveRecord(Ranking r) {
+        rjc.create(r);
     }
     
 }
