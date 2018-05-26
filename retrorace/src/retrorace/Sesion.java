@@ -56,6 +56,7 @@ public class Sesion {
     
     public Partida initPartida(int numMap, String tipoPartida){
         partida = new Partida(mapas.get(numMap));
+        this.partida.setActiva(true);
         if(tipoPartida.equals("Duo")){
             partida.addPersonaje();
         } else {            
@@ -74,6 +75,9 @@ public class Sesion {
     
     public void endPartida(){
         this.partida.setActiva(false);
+        this.partida.getMapa().pararAnimacion();
+        this.partida.getMapa().recargarDistribucion();      
+        
     }
     
     
