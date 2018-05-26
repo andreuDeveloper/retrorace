@@ -32,6 +32,7 @@ public class Partida implements Runnable {
 
     private ArrayList<Personaje> personajes; //Por defecto 0 es el nuestro
     private boolean activa;
+    private Sesion sesion;
     private String tipoPartida = "";
     private final double gravedad = 1;
     private Mapa mapa;
@@ -82,6 +83,7 @@ public class Partida implements Runnable {
     public void run() {
 
         iniciarPartida();
+        
         while (activa) {
             try {
                 if (tipoPartida.equals("Online")) {
@@ -90,12 +92,15 @@ public class Partida implements Runnable {
                         this.server.sendMessage(this.personajes.get(0).getInfo());
                     }
                 }
-                //audioClip.loop(Clip.LOOP_CONTINUOUSLY);
-                Thread.sleep(50);
+                audioClip.loop(Clip.LOOP_CONTINUOUSLY);
+                Thread.sleep(100);
                 
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+        }        
+        if (this.getTipoPartida().equals("Single")) {
+            this.sesion.saveRecord(this.getMapa(), this.tiempo.getContador());
         }
         this.tiempo.end();
         this.audioClip.stop();
@@ -103,6 +108,14 @@ public class Partida implements Runnable {
 
     }
 
+    public Sesion getSesion() {
+        return sesion;
+    }
+
+    public void setSesion(Sesion sesion) {
+        this.sesion = sesion;
+    }
+    
     public void setServer(Server server) {
         this.server = server;
     }

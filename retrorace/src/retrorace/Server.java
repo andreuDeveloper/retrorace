@@ -127,7 +127,7 @@ public class Server implements Runnable {
      */
     public void sendMessage(String msg) {
         String s = "$PLAYER-STATUS$," + msg;
-        System.out.println("SENDING MSG "+s);
+        //System.out.println("SENDING MSG "+s);
         out.println(s);
     }
 

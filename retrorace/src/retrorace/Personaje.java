@@ -75,7 +75,9 @@ public class Personaje implements Runnable {
                 if (!esJugadorOnline) {
                     moverPersonaje();
                     if (enMeta) {
+                        partida.setActiva(false);
                         saltar(this.fuerzaSalto);
+                        Thread.sleep(1000);                        
                     } else {
                         if (!muerto) {
                             y += velY;
@@ -86,8 +88,6 @@ public class Personaje implements Runnable {
                         }
                     }
 
-                } else {
-                    //Es online, es online
                 }
 
                 Thread.sleep(timeRefresh);
@@ -213,8 +213,8 @@ public class Personaje implements Runnable {
     public boolean isMuerto() {
         return muerto;
     }
-    
-    public void setMuerto(boolean muerto){
+
+    public void setMuerto(boolean muerto) {
         this.muerto = muerto;
     }
 
@@ -241,7 +241,7 @@ public class Personaje implements Runnable {
 
     public void setUniqueID(String uniqueID) {
         this.uniqueID = uniqueID;
-    }       
+    }
 
     public boolean isEsJugadorOnline() {
         return esJugadorOnline;
@@ -250,13 +250,11 @@ public class Personaje implements Runnable {
     public void setEsJugadorOnline(boolean esJugadorOnline) {
         this.esJugadorOnline = esJugadorOnline;
     }
-    
+
     public String getInfo() {
-        return uniqueID+","+this.x+","+this.y+","+jumping+","+muerto;
+        return uniqueID + "," + this.x + "," + this.y + "," + jumping + "," + muerto;
     }
 
-    
-    
     private void moverPersonaje() {
         try {
             if (!muerto) {
@@ -272,7 +270,7 @@ public class Personaje implements Runnable {
                 partida.commprobarSuelo(this);
             }
         } catch (Exception e) {
-            System.out.println(e.toString());
+            //System.out.println(e.toString());
             e.printStackTrace();
         }
     }
