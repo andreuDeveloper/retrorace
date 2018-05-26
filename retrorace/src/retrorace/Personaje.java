@@ -59,8 +59,6 @@ public class Personaje implements Runnable {
     private BufferedImage imgSaltar;
     private BufferedImage imgMuerto;
 
-    private Clip jumpSound;
-
     //audioClip.start();
     public Personaje(Partida partida) {
         this.x = 5;
@@ -72,7 +70,6 @@ public class Personaje implements Runnable {
         this.color = "White";
         this.lastCheckPoint = null;
         initImagenes();
-        initSounds();
     }
 
     @Override
@@ -159,7 +156,6 @@ public class Personaje implements Runnable {
             velY = 0;
             falling = false;
             jumping = false;
-            this.jumpSound.stop();
         } else {
             falling = true;
         }
@@ -335,11 +331,14 @@ public class Personaje implements Runnable {
     }
 
     public void saltar(double fuerza) {
-        if (!jumping && !falling) {
-            velY = -fuerza;
-            this.y = y + velY;
-            jumping = true;
-            this.jumpSound.start();
+        try {
+            if (!jumping && !falling) {
+                velY = -fuerza;
+                this.y = y + velY;
+                jumping = true;
+                this.jumpSound();
+            }
+        } catch (Exception e) {
         }
     }
 
@@ -348,6 +347,7 @@ public class Personaje implements Runnable {
         this.estaSobreSuelo = true;
         this.velY = 0;
         try {
+            this.deathSound();
             Thread.sleep(1000);
             reset();
         } catch (InterruptedException ex) {
@@ -393,14 +393,29 @@ public class Personaje implements Runnable {
         System.out.println("REAED ALL SUCCESSFULLY");
     }
 
-    private void initSounds() {
+    private void jumpSound() {
         try {
             File audioFile = new File("music/jump.wav");
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
-            AudioFormat format = audioStream.getFormat();
+            AudioInputStream audioStreamJump = AudioSystem.getAudioInputStream(audioFile);
+            AudioFormat format = audioStreamJump.getFormat();
             DataLine.Info info = new DataLine.Info(Clip.class, format);
-            this.jumpSound = (Clip) AudioSystem.getLine(info);
-            this.jumpSound.open(audioStream);
+            Clip jumpSound = (Clip) AudioSystem.getLine(info);
+            jumpSound.open(audioStreamJump);
+            jumpSound.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void deathSound() {
+        try {
+            File audioFile = new File("music/death.wav");
+            AudioInputStream audioStreamDeath = AudioSystem.getAudioInputStream(audioFile);
+            AudioFormat format = audioStreamDeath.getFormat();
+            DataLine.Info info = new DataLine.Info(Clip.class, format);
+            Clip deathSound = (Clip) AudioSystem.getLine(info);
+            deathSound.open(audioStreamDeath);
+            deathSound.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
