@@ -99,7 +99,7 @@ public class Partida implements Runnable {
                 ex.printStackTrace();
             }
         }        
-        if (this.getTipoPartida().equals("Single")) {
+        if (this.getTipoPartida().equals("Single") && (this.getPersonaje(0).isEnMeta())) {
             this.sesion.saveRecord(this.getMapa(), this.tiempo.getContador());
         }
         this.tiempo.end();

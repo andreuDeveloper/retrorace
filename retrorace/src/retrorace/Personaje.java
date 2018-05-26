@@ -84,7 +84,9 @@ public class Personaje implements Runnable {
                 if (!esJugadorOnline) {
                     moverPersonaje();
                     if (enMeta) {
-                        partida.setActiva(false);
+                        if (this.partida.getTipoPartida().equals("Single")) {
+                            partida.setActiva(false);
+                        }
                         saltar(this.fuerzaSalto);
                         Thread.sleep(1000);
                     } else {
