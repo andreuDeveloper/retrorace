@@ -311,7 +311,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         JPanel panelAuxMaps = new JPanel(new GridLayout(sesion.getMapas().size(), 1, 5, 15));
 
         for (Mapa m : sesion.getMapas()) {
-            m.iniciarMapa();
+            m.cargarImagen();
             Image image = m.getImage(); // transform it 
             Image newimg = image.getScaledInstance(480, 270, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
             btnMap.add(new JButton(m.getNombre(), new ImageIcon(newimg)));
