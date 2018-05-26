@@ -64,8 +64,7 @@ public class Sesion {
             tipoPartida = "Single";
             ClientProject cp = new ClientProject();
             cp.setPartida(partida);            
-            cp.createConnection(username, numMap);
-            
+            cp.createConnection(username, numMap);  
         }
         
         partida.setTipoPartida(tipoPartida);
