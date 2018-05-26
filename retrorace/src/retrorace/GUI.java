@@ -110,6 +110,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         } else {
             System.err.println("Full screen not supported");
         }
+        
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.addUIComponents(getContentPane());

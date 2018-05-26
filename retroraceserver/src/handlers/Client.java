@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.UUID;
 
 /**
  *
@@ -24,6 +25,7 @@ public class Client implements Runnable {
     protected final String address;
     protected BufferedReader in;
     protected PrintWriter out;
+    protected String uniqueID;
 
     /**
      * /Constructor of the cliend handler
@@ -36,6 +38,7 @@ public class Client implements Runnable {
         this.sp = sp;
         this.socket = socket;
         this.address = this.socket.getInetAddress().getHostAddress();
+        this.uniqueID = UUID.randomUUID().toString();
     }
 
     /**
@@ -49,7 +52,9 @@ public class Client implements Runnable {
             // Get I/O streams from the socket
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
-
+            
+            sendMessage("$ID$,"+this.uniqueID.toString());
+            sp.sendAllPlayers();
             processClient(in, out); // interact with a client
 
             // Close client connection
@@ -84,7 +89,7 @@ public class Client implements Runnable {
                             case "BYE":
                                 done = true;
                                 break;
-                            case "MSG":
+                            case "$PLAYER-STATUS$":
                                 getMessage(line);
                                 break;
                             default:
@@ -116,5 +121,15 @@ public class Client implements Runnable {
     public void sendMessage(String line) {
         out.println(line);
     }
+
+    public String getUniqueID() {
+        return uniqueID;
+    }
+
+    public void setUniqueID(String uniqueID) {
+        this.uniqueID = uniqueID;
+    }
+    
+    
 
 }
