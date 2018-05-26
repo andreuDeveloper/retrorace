@@ -579,7 +579,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
         ranking = new RankingGUI(juego.getDbManager(), sesion.getUsername());
         panelRanking.add(ranking, BorderLayout.CENTER);
-
+ranking.setVisible(false);
         
         return panelRanking;
     }
@@ -773,6 +773,10 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         t.start();
     }
 
+    public void saveRecord(int idMap, int time) {
+        ranking.saveRecord(idMap, time);
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().getClass() == btnExit.getClass()) {
@@ -824,6 +828,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
                 }
             } else if (panelGamescreen != null && panelGamescreen.isVisible()) {
                 if (btnAux == btnBack) {
+                    System.out.println("ENDING");
                     sesion.endPartida();
                     panelMapChoice.setVisible(true);
                     panelGamescreen.setVisible(false);
@@ -848,8 +853,6 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
                 if (btnAux == btnMyRanking || btnAux == btnGlobalRanking) {
                     btnGroupMapsRanking.clearSelection();
                     ranking.setVisible(false);
-
-
                 } else {
                     blockRankingPanel(true);
                     for (JToggleButton btnAuxMap : btnMapRanking) {

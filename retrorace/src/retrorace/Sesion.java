@@ -82,7 +82,7 @@ public class Sesion {
     }
 
     void saveRecord(Mapa mapa, int contador) {
-        System.out.println("Puntuacion guardada"+ mapa.getNombre()+" - "+contador);
+        gui.saveRecord(mapas.indexOf(mapa), contador);
     }
     
     
