@@ -28,32 +28,51 @@ public class Mapa {
     private ArrayList<Casilla> casillas;
     private int[][] distribucion;
     private Image image;
+    private boolean estadoAnimacion;
 
     public Mapa() {
-
+            ImageIcon ii = new ImageIcon(this.imgRoute);
+            this.image = ii.getImage();
     }
 
     /**
-     * Inicializa el mapa
+     * Si en las coordenadas proporcionadas hay una antorcha desactivada es
+     * activada.
+     *
+     * @param x
+     * @param y
      */
-    public void iniciarMapa() {
-        try {
-            cargarCasillas();
-            ImageIcon ii = new ImageIcon(imgRoute);
-            image = ii.getImage();
-            this.animar();
-
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Mapa.class.getName()).log(Level.SEVERE, null, ex);
+    public void activarAntorcha(int x, int y) {
+        if (this.distribucion[y][x] == 4) {
+            this.distribucion[y][x] = 9;
         }
     }
 
     /**
-     * Sirve para mover el mapa en relación a la coordenada x proporcionada.
+     * Si en las coordenadas proporcionadas hay una meta desactivada es
+     * activada.
      *
-     * @param g Graphics
-     * @param x coordenada Int
+     * @param x
+     * @param y
      */
+    public void activarMeta(int x, int y) {
+        if (this.distribucion[y][x] == 11) {
+            this.distribucion[y][x] = 5;
+        }
+    }
+
+    /*
+    Carga todos los tipos de casillas.
+     */
+    public void cargarCasillas() throws FileNotFoundException {
+        Gson gson = new Gson();
+        this.casillas = gson.fromJson(new FileReader("data/casillas.json"), new TypeToken<List<Casilla>>() {
+        }.getType());
+        for (Casilla casilla : this.casillas) {
+            casilla.loadImage();
+        }
+    }
+
     /**
      * Devuelve la casilla en relación a las coordenadas proporcionadas
      *
@@ -77,6 +96,21 @@ public class Mapa {
         }
     }
 
+    /**
+     * Inicializa el mapa
+     */
+    public void iniciarMapa() {
+        try {
+            cargarCasillas();
+            this.estadoAnimacion = true;
+            this.animar();
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Mapa.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+
     public void paint(Graphics g) {
         for (int row = 0; row <= 26; row++) {
             for (int col = 0; col <= 47; col++) {
@@ -91,30 +125,30 @@ public class Mapa {
         }
         Toolkit.getDefaultToolkit().sync();
     }
-
-    public void activarAntorcha(int x, int y) {
-        if (this.distribucion[y][x] == 4) {
-            this.distribucion[y][x] = 9;
-        }
+    
+    /**
+     * Para el Thread que anima este mapa.
+     */
+    public void pararAnimacion(){
+        this.estadoAnimacion=false;
     }
 
-    public void activarMeta(int x, int y) {
-        if (this.distribucion[y][x] == 11) {
-            this.distribucion[y][x] = 5;
-        }
-    }
-
-    public void animar() {
+    /**
+     * Recorre la distribucion y en caso de tener algun elemento activo, este es
+     * animado.
+     *
+     */
+    private void animar() {
         Thread thread = new Thread(new Runnable() {
             public void run() {
-                while (true) {
+                while (estadoAnimacion) {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Mapa.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     for (int row = 0; row <= 26; row++) {
-                        for (int col = 0; col <= 47; col++) {                            
+                        for (int col = 0; col <= 47; col++) {
                             switch (distribucion[row][col]) {
                                 case 5:
                                     distribucion[row][col] = 10;
@@ -136,23 +170,7 @@ public class Mapa {
             }
         }
         );
-
-// start the thread
         thread.start();
-
-    }
-
-    /*
-    Carga todos los tipos de casillas.
-     */
-
-    public void cargarCasillas() throws FileNotFoundException {
-        Gson gson = new Gson();
-        this.casillas = gson.fromJson(new FileReader("data/casillas.json"), new TypeToken<List<Casilla>>() {
-        }.getType());
-        for (Casilla casilla : this.casillas) {
-            casilla.loadImage();
-        }
     }
 
     public int[][] getDistribucion() {
