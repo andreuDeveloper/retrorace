@@ -13,6 +13,7 @@ import java.awt.Toolkit;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,12 +28,12 @@ public class Mapa {
     private String nombre, imgRoute;
     private ArrayList<Casilla> casillas;
     private int[][] distribucion;
+    private int[][] distribucionAux;
     private Image image;
     private boolean estadoAnimacion;
 
     public Mapa() {
-            ImageIcon ii = new ImageIcon(this.imgRoute);
-            this.image = ii.getImage();
+
     }
 
     /**
@@ -73,6 +74,14 @@ public class Mapa {
         }
     }
 
+    /*
+    Carga la imagen del Mapa.
+     */
+    public void cargarImagen() {
+        ImageIcon ii = new ImageIcon(this.imgRoute);
+        this.image = ii.getImage();
+    }
+
     /**
      * Devuelve la casilla en relación a las coordenadas proporcionadas
      *
@@ -102,6 +111,12 @@ public class Mapa {
     public void iniciarMapa() {
         try {
             cargarCasillas();
+            this.distribucionAux = new int[this.distribucion.length][this.distribucion[0].length];
+            for (int i = 0; i < this.distribucion.length; i++) {
+                for (int j = 0; j < this.distribucion[i].length; j++) {
+                    this.distribucionAux[i][j] = this.distribucion[i][j];
+                }
+            }
             this.estadoAnimacion = true;
             this.animar();
 
@@ -109,7 +124,6 @@ public class Mapa {
             Logger.getLogger(Mapa.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
 
     public void paint(Graphics g) {
         for (int row = 0; row <= 26; row++) {
@@ -125,12 +139,23 @@ public class Mapa {
         }
         Toolkit.getDefaultToolkit().sync();
     }
-    
+
     /**
      * Para el Thread que anima este mapa.
      */
-    public void pararAnimacion(){
-        this.estadoAnimacion=false;
+    public void pararAnimacion() {
+        this.estadoAnimacion = false;
+    }
+
+    /**
+     * Recarga la distibucion.
+     */
+    public void recargarDistribucion() {
+        for (int i = 0; i < this.distribucion.length; i++) {
+            for (int j = 0; j < this.distribucion[i].length; j++) {
+                this.distribucion[i][j] = this.distribucionAux[i][j];
+            }
+        }
     }
 
     /**
