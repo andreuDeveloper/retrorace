@@ -58,6 +58,7 @@ public class ServerProject {
      */
     public synchronized void addClient(Socket sock) {
         Client c = new Client(this, sock);
+        c.setColor(this.colores[this.players.size()-1]);
         this.players.add(c);
         new Thread(c).start();
 

@@ -26,6 +26,7 @@ public class Client implements Runnable {
     protected BufferedReader in;
     protected PrintWriter out;
     protected String uniqueID;
+    protected String color;
 
     /**
      * /Constructor of the cliend handler
@@ -54,6 +55,7 @@ public class Client implements Runnable {
             out = new PrintWriter(socket.getOutputStream(), true);
             
             sendMessage("$ID$,"+this.uniqueID.toString());
+            sendMessage("$COLOR$,"+this.color);
             sp.sendAllPlayers();
             processClient(in, out); // interact with a client
 
@@ -102,6 +104,16 @@ public class Client implements Runnable {
             System.out.println(e);
         }
     }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+    
+    
 
     /**
      * Get message of the client and broadcast it to the other and the other
