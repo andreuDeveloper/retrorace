@@ -84,6 +84,9 @@ public class Server implements Runnable {
                             case "$ID$":
                                 this.partida.getPersonaje(0).setUniqueID(parts[1]);
                                 break;
+                            case "$COLOR$":
+                                this.partida.getPersonaje(0).setColor(parts[1]);
+                                break;
                             case "$ALL-PLAYERS$":
                                 addNewPlayers(line);
                                 break;
@@ -115,7 +118,7 @@ public class Server implements Runnable {
             System.out.println(line);
         } catch (Exception ex) {
             ex.printStackTrace();
-            
+
         }
     }
 
@@ -153,7 +156,7 @@ public class Server implements Runnable {
     private void setPlayerStatus(String line) {
         String parts[] = line.split(",");
         for (int i = 1; i < this.partida.totalPersonajes(); i++) {
-            if (this.partida.getPersonaje(i).getUniqueID().equals(parts[1])){
+            if (this.partida.getPersonaje(i).getUniqueID().equals(parts[1])) {
                 Personaje p = this.partida.getPersonaje(i);
                 p.setX(Float.parseFloat(parts[2]));
                 p.setY(Float.parseFloat(parts[3]));
