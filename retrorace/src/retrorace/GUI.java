@@ -577,7 +577,9 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         panelTop.add(lblErrorRanking, c);
         panelRanking.add(panelTop, BorderLayout.NORTH);
 
-        ranking = new RankingGUI(juego.getDbManager(), sesion.getUsername());
+        if(ranking==null){
+            ranking = new RankingGUI(juego.getDbManager(), sesion.getUsername());
+        }
         panelRanking.add(ranking, BorderLayout.CENTER);
 ranking.setVisible(false);
         
@@ -774,6 +776,9 @@ ranking.setVisible(false);
     }
 
     public void saveRecord(int idMap, int time) {
+        if(ranking==null){
+            ranking = new RankingGUI(juego.getDbManager(), sesion.getUsername());
+        }
         ranking.saveRecord(idMap, time);
     }
     
@@ -828,7 +833,7 @@ ranking.setVisible(false);
                 }
             } else if (panelGamescreen != null && panelGamescreen.isVisible()) {
                 if (btnAux == btnBack) {
-                    System.out.println("ENDING");
+
                     sesion.endPartida();
                     panelMapChoice.setVisible(true);
                     panelGamescreen.setVisible(false);
