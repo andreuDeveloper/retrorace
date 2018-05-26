@@ -19,7 +19,10 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
-
+import sun.audio.AudioData;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
+import sun.audio.ContinuousAudioDataStream;
 
 /**
  *
@@ -60,7 +63,7 @@ public class Partida implements Runnable {
  
             audioClip.open(audioStream);
              
-            audioClip.start();
+            //audioClip.start();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,7 +90,7 @@ public class Partida implements Runnable {
                         this.server.sendMessage(this.personajes.get(0).getInfo());
                     }
                 }
-                audioClip.loop(Clip.LOOP_CONTINUOUSLY);
+                //audioClip.loop(Clip.LOOP_CONTINUOUSLY);
                 Thread.sleep(50);
                 
             } catch (Exception ex) {
@@ -97,6 +100,7 @@ public class Partida implements Runnable {
         this.tiempo.end();
         this.audioClip.stop();
         this.audioClip = null;
+
     }
 
     public void setServer(Server server) {
