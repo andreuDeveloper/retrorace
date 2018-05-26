@@ -44,22 +44,22 @@ public class Partida implements Runnable {
 
     @Override
     public void run() {
+
         iniciarPartida();
         while (activa) {
+            try {
             if (tipoPartida.equals("Online")) {
                 //El player 0 es el local, enviamos su info
-                if (server != null && this.personajes.get(0).getUniqueID().length()>0){
+                if (server != null) {
                     this.server.sendMessage(this.personajes.get(0).getInfo());
                 }
             }
-
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
         this.tiempo.end();
+
     }
 
     public void setServer(Server server) {
