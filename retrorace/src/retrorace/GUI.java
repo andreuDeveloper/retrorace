@@ -308,7 +308,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         c.fill = GridBagConstraints.HORIZONTAL;
         panelChoiceServerMultiplayer.add(lblIP, c);
 
-        txtIP = new JTextField();
+        txtIP = new JTextField("localhost");
         txtIP.addKeyListener(this);
 
         c.gridx = 0;
@@ -327,7 +327,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         c.fill = GridBagConstraints.HORIZONTAL;
         panelChoiceServerMultiplayer.add(lblPort, c);
 
-        txtPort = new JTextField();
+        txtPort = new JTextField("8888");
         txtPort.addKeyListener(this);
 
         c.gridx = 0;
