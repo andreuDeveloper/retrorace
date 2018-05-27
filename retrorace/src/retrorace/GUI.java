@@ -486,6 +486,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         txtPassword = new JPasswordField();
         txtPassword.addKeyListener(this);
 
+
         c.gridx = 0;
         c.gridy = 4;
         c.gridwidth = 2;
