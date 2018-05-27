@@ -19,6 +19,7 @@ public class OutServer extends Thread{
     private int PORT;
     private String HOST;
     private Socket socket;
+    private boolean connecting;
     private final ClientProject cp;
 
     /**
@@ -50,7 +51,7 @@ public class OutServer extends Thread{
      */
     @Override
     public void run(){
-        while (true) {
+        while (connecting) {
             if (!this.cp.hayServer()) {
                 tryToConnect();
             }
@@ -81,5 +82,8 @@ public class OutServer extends Thread{
         }
     }
 
+    public void setConnecting(boolean connecting) {
+        this.connecting = connecting;
+    }
 
 }
