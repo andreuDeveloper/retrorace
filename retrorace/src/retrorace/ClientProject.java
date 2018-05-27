@@ -40,6 +40,7 @@ public class ClientProject {
         this.outServer.setHOST(host);
        //this.outServer.setHOST("localhost");
         this.outServer.setPORT(port);
+        this.outServer.setConnecting(true);
         //this.outServer.setPORT(8888);
         this.outServer.start();
     }
@@ -88,6 +89,10 @@ public class ClientProject {
 
     void setPartida(Partida partida) {
         this.partida = partida;
+    }
+
+    void closeConnection() {
+        this.outServer.setConnecting(false);
     }
 
 }
