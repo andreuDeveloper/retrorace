@@ -34,7 +34,7 @@ public class Partida implements Runnable {
     private Mapa mapa;
     private Server server = null;
     private Timer tiempo;
-    private final String colores[] = {"Blue", "Green", "White", "White"};
+    private final String colores[] = {"Blue", "Green", "Red", "White"};
     //Music
     private Clip audioClip;
 
@@ -51,17 +51,11 @@ public class Partida implements Runnable {
         try {
             File audioFile = new File("music/track1.wav");
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
- 
             AudioFormat format = audioStream.getFormat();
- 
             DataLine.Info info = new DataLine.Info(Clip.class, format);
- 
             audioClip = (Clip) AudioSystem.getLine(info);
- 
             audioClip.open(audioStream);
-             
             //audioClip.start();
-
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -69,7 +63,9 @@ public class Partida implements Runnable {
 
         this.activa = true;
         for (int i = 0; i < this.personajes.size(); i++) {
-            this.personajes.get(i).setColor(colores[i]);
+            if (!tipoPartida.equals("Online")) {
+                this.personajes.get(i).setColor(colores[i]);
+            }
             new Thread(this.personajes.get(i)).start();
         }
         new Thread(this.tiempo).start();
@@ -79,7 +75,7 @@ public class Partida implements Runnable {
     public void run() {
 
         iniciarPartida();
-        
+
         while (activa) {
             try {
                 if (tipoPartida.equals("Online")) {
@@ -90,11 +86,11 @@ public class Partida implements Runnable {
                 }
                 audioClip.loop(Clip.LOOP_CONTINUOUSLY);
                 Thread.sleep(100);
-                
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        }        
+        }
         if (this.getTipoPartida().equals("Single") && (this.getPersonaje(0).isEnMeta())) {
             this.sesion.saveRecord(this.getMapa(), this.tiempo.getContador());
         }
@@ -111,7 +107,7 @@ public class Partida implements Runnable {
     public void setSesion(Sesion sesion) {
         this.sesion = sesion;
     }
-    
+
     public void setServer(Server server) {
         this.server = server;
     }

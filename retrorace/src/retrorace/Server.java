@@ -76,8 +76,8 @@ public class Server implements Runnable {
                 if ((line = in.readLine()) == null) {
                     done = true;
                 } else {
-                    System.out.println("Server sent something");
-                    System.out.println(line);
+                    //System.out.println("Server sent something");
+                    //System.out.println(line);
                     String parts[] = line.split(",");
                     if (parts.length > 0) {
                         switch (parts[0]) {
@@ -93,7 +93,7 @@ public class Server implements Runnable {
                             case "$PLAYER-STATUS$":
                                 setPlayerStatus(line);
                             default:
-                                System.out.println("Ignoring input line");
+                                //System.out.println("Ignoring input line");
                         }
                     }
                 }
@@ -113,9 +113,9 @@ public class Server implements Runnable {
     protected void getMessage(String line) {
         try {
             line = line.substring(3).trim();
-            System.out.println(line);
+            //System.out.println(line);
             line = line.replace(" &", ":");
-            System.out.println(line);
+            //System.out.println(line);
         } catch (Exception ex) {
             ex.printStackTrace();
 
@@ -162,7 +162,9 @@ public class Server implements Runnable {
                 p.setY(Float.parseFloat(parts[3]));
                 p.setJumping(Boolean.valueOf(parts[4]));
                 p.setMuerto(Boolean.valueOf(parts[5]));
-                System.out.println(p.getInfo());
+                p.setColor(parts[6]);
+                p.setLastDirection(parts[7]);
+                //System.out.println(p.getInfo());
             }
         }
     }
