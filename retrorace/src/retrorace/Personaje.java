@@ -259,8 +259,18 @@ public class Personaje implements Runnable {
         this.esJugadorOnline = esJugadorOnline;
     }
 
+    public String getLastDirection() {
+        return lastDirection;
+    }
+
+    public void setLastDirection(String lastDirection) {
+        this.lastDirection = lastDirection;
+    }
+
+    
+    
     public String getInfo() {
-        return uniqueID + "," + this.x + "," + this.y + "," + jumping + "," + muerto;
+        return uniqueID + "," + this.x + "," + this.y + "," + jumping + "," + muerto + "," + color + "," + lastDirection;
     }
 
     private void moverPersonaje() {
@@ -294,7 +304,7 @@ public class Personaje implements Runnable {
             } else if (estaMoviendo) {
                 if (lastDirection.equals("Left")) {
                     img = imgTransicionLeft[this.animacion.getContador() % imgTransicionLeft.length];
-                } else {
+                } else { //Right
                     img = imgTransicionRight[this.animacion.getContador() % imgTransicionRight.length];
                 }
             } else { //Parado
@@ -390,7 +400,6 @@ public class Personaje implements Runnable {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        System.out.println("REAED ALL SUCCESSFULLY");
     }
 
     private void jumpSound() {

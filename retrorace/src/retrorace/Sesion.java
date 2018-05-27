@@ -13,39 +13,108 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JTextField;
 
 /**
  *
  * @author sosan
  */
 public class Sesion {
-    
+/*ATRIBUTOS*/
     private ArrayList<Mapa> mapas;
     private Partida partida;
-    private GUI gui;
-    private String username;
+    private final GUI gui;
+    private final String username;
     
-    //ranking
-    
-    public Sesion(GUI gui,String user){
+/*CONSTRUCTOR*/
+    public Sesion(GUI gui, String user) {
         this.gui = gui;
-        this.username=user;
-        this.mapas=new ArrayList();
+        this.username = user;
+        this.mapas = new ArrayList();
         this.gui.setSesion(this);
     }
-    
+
     /*GETTERS Y SETERS*/
+    public GUI getGui() {
+        return gui;
+    }
+    
+        public ArrayList<Mapa> getMapas() {
+        return mapas;
+    }
+    
     public String getUsername() {
         return username;
     }
 
-    public ArrayList<Mapa> getMapas() {
-        return mapas;
+/*METODOS PÚBLICOS*/
+   /**
+    * Finaliza la partida actual
+    */
+    public void endPartida() {
+        this.partida.setActiva(false);
+        this.partida.getMapa().pararAnimacion();
+        this.partida.getMapa().recargarDistribucion();
+
+    }
+    
+    /**
+     * Inicia una partida duo o single
+     * @param numMap
+     * @param tipoPartida
+     * @return 
+     */
+    public Partida initPartida(int numMap, String tipoPartida) {
+        partida = new Partida(mapas.get(numMap));
+        this.partida.setActiva(true);
+        if (tipoPartida.equals("Duo")) {
+            partida.addPersonaje();
+        }
+        partida.setTipoPartida(tipoPartida);
+        partida.setSesion(this);
+        new Thread(partida).start();
+        return partida;
     }
 
-    
-    public void loadMaps(){
+    /**
+     * Inicia una partida online
+     * @param host
+     * @param port
+     * @return 
+     */
+    public Partida initPartidaOnline(String host, int port) {
+        ClientProject cp = new ClientProject();
+        if (mapas.isEmpty()) {
+            loadMaps();
+        }
+        partida = new Partida(mapas.get(0));
+        this.partida.setActiva(true);
+        partida.setTipoPartida("Online");
+        partida.setSesion(this);
+
+        cp.setPartida(partida);
+        cp.createConnection(host, port);       
+        
+        int cont=0;
+        while(!cp.hayServer() && cont<5){      
+            try {
+                System.out.println("NADA");
+                Thread.sleep(1000);
+                cont++;
+            } catch (InterruptedException ex) {               
+            }
+        }
+        if(cp.hayServer()){
+            new Thread(partida).start();
+        return partida;
+        }
+        cp.closeConnection();
+        return null;     
+    }
+
+    /**
+     * Carga los mapas desde un json
+     */
+    public void loadMaps() {
         try {
             Gson gson = new Gson();
             mapas = gson.fromJson(new FileReader("data/mapas.json"), new TypeToken<List<Mapa>>() {
@@ -54,62 +123,14 @@ public class Sesion {
             Logger.getLogger(Sesion.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public Partida initPartida(int numMap, String tipoPartida){
-        partida = new Partida(mapas.get(numMap));
-        this.partida.setActiva(true);
-        if(tipoPartida.equals("Duo")){
-            partida.addPersonaje();
-        } else {            
-            //partida.setTipoPartida("Online");
-            tipoPartida = "Single";
-            ClientProject cp = new ClientProject();
-            cp.setPartida(partida);            
-            cp.createConnection(username, numMap);  
-        }
-        
-        partida.setTipoPartida(tipoPartida);
-        partida.setSesion(this);
-        new Thread(partida).start();
-        return partida;
-    }
-    
-//    public void connectServer(String host, int port) {
-//        ClientProject cp = new ClientProject();         
-//        cp.createConnection(host, port); 
-//    }
-    
-     public Partida initPartidaOnline(String host, int port){
-         if (mapas.size()==0) {
-             loadMaps();
-         }
-        partida = new Partida(mapas.get(0));
-        this.partida.setActiva(true);
-        
-            ClientProject cp = new ClientProject();
-            cp.setPartida(partida);            
-            cp.createConnection(host,port);  
 
-        
-        partida.setTipoPartida("Online");
-        partida.setSesion(this);
-        new Thread(partida).start();
-        return partida;
-    }
-    
-    public void endPartida(){
-        this.partida.setActiva(false);
-        this.partida.getMapa().pararAnimacion();
-        this.partida.getMapa().recargarDistribucion();      
-        
-    }
-
-    void saveRecord(Mapa mapa, int contador) {
+    /**
+     * Guarda los records en BD.
+     * @param mapa
+     * @param contador 
+     */
+    public void saveRecord(Mapa mapa, int contador) {
         gui.saveRecord(mapas.indexOf(mapa), contador);
     }
 
-    
-    
-    
-    
 }
