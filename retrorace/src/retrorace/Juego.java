@@ -5,50 +5,81 @@
  */
 package retrorace;
 
-import crypt.Hash;
-import entities.Users;
-import entities.UsersJpaController;
-import java.util.List;
-import javax.persistence.Persistence;
+import entities.Ranking;
 
 /**
  *
  * @author sosan
  */
 public class Juego {
-    
+
+    /*ATRIBUTOS*/
     private Sesion sesion;
     private GUI gui;
     private DBManager dbManager;
-    
-    
-    public void initJuego(){
+
+    /*GETTERS Y SETTERS*/
+    public DBManager getDbManager() {
+        return dbManager;
+    }
+
+    /*MÉTODOS PÚBLICOS*/
+    /**
+     * Comprueba si un usuario existe en BD
+     *
+     * @param username
+     * @return
+     */
+    public boolean checkIfUsernameExists(String username) {
+        return dbManager.checkIfUsernameExists(username);
+    }
+
+    /**
+     * Comprueba la conexión con BD
+     *
+     * @return
+     */
+    public boolean checkConnectionDB() {
+        return dbManager.checkConnectionDB();
+    }
+
+    /**
+     * Comprueba las credenciales de un usuario en BD
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    public boolean checkCredentials(String username, String password) {
+        return dbManager.checkCredentials(username, password);
+    }
+
+    /**
+     * Inicia la GUI y la BD
+     */
+    public void initJuego() {
         gui = new GUI(this);
         this.gui.initGUI();
         dbManager = new DBManager();
     }
 
-    public DBManager getDbManager() {
-        return dbManager;
+    /**
+     * Inicia la sesión de un usuario
+     *
+     * @param username
+     */
+    public void initSesion(String username) {
+        this.sesion = new Sesion(this.gui, username);
     }
 
-    void initSesion(String username) {
-        this.sesion=new Sesion(this.gui,username);
-    }
-
-    boolean checkIfUsernameExists(String username) {
-        return dbManager.checkIfUsernameExists(username);
-    }
-
-    void registerUser(String username, String password) {
+    /**
+     * Registra a un usuario en BD
+     *
+     * @param username
+     * @param password
+     */
+    public void registerUser(String username, String password) {
         dbManager.registerUser(username, password);
     }
 
-    boolean checkConnectionDB() {
-        return dbManager.checkConnectionDB();
-    }
-
-    boolean checkCredentials(String username, String password) {
-        return dbManager.checkCredentials(username, password);
-    }
 }
