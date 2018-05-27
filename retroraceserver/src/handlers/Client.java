@@ -55,7 +55,7 @@ public class Client implements Runnable {
             out = new PrintWriter(socket.getOutputStream(), true);
             
             sendMessage("$ID$,"+this.uniqueID.toString());
-            //sendMessage("$COLOR$,"+this.color);
+            sendMessage("$COLOR$,"+this.color);
             sp.sendAllPlayers();
             processClient(in, out); // interact with a client
 

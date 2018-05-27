@@ -23,8 +23,8 @@ public class ServerProject {
     private int myPORT;
     private ServerMT serverMT;
 
-    private final ArrayList<Client> players;
-    private final String colores[] = {"Blue", "Green", "White", "White"};
+    private ArrayList<Client> players;
+    private String colores[] = {"Blue", "Green", "Red", "White"};
 
     /**
      * Just the constructor, initialize the server and clients list
@@ -57,13 +57,17 @@ public class ServerProject {
      * @param sock Socket of the client - server
      */
     public synchronized void addClient(Socket sock) {
-        Client c = new Client(this, sock);
-        //c.setColor(this.colores[this.players.size()-1]);
-        this.players.add(c);
-        new Thread(c).start();
+        if (players.size() <= 4) {
+            Client c = new Client(this, sock);
+            this.players.add(c);
+            c.setColor(colores[players.size() - 1]);
+            new Thread(c).start();
+            System.out.println("ServerProject trying to add client");
+            addMessageToLog("Added a client");
+        } else {
+            addMessageToLog("Server is full (4 players)");
+        }
 
-        System.out.println("ServerProject trying to add client");
-        addMessageToLog("Added a client");
     }
 
     public synchronized void sendAllPlayers() {
@@ -98,9 +102,6 @@ public class ServerProject {
      */
     public synchronized void doBroadcastMsgFromClient(Client c, String msg) {
         //Broadcast to all the clients except the Client c
-        System.out.println("Broadcasting msg.. to " + (players.size() - 1));
-        addMessageToLog("Broadcasting msg.. to " + (players.size() - 1));
-
         for (int i = 0; i < this.players.size(); i++) {
             // debe hacer if / else --> !cliente
             if (!c.equals(players.get(i))) {
@@ -150,6 +151,10 @@ public class ServerProject {
      */
     public void addMessageToLog(String msg) {
         this.serverFrame.addMessageToLog(msg);
+    }
+
+    public String getRandomColor() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
